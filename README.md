@@ -1,1 +1,1 @@
-# taaja-bazzar
+# taajabazar

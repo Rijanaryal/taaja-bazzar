@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taaja Bazar — Direct from the field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #1f4d2c;
+      --forest-dark: #153a20;
+      --forest-light: #e8efe6;
+      --mustard: #e3a008;
+      --mustard-dark: #b57e05;
+      --soil: #6b4226;
+      --paper: #faf7f0;
+      --paper-dim: #f1ede2;
+      --ink: #23201b;
+      --ink-soft: #5a5548;
+      --clay: #b5533c;
+      --line: rgba(35,32,27,0.14);
+      --font-display: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Work Sans', system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .ne { display: none; }
+    body.lang-ne .en { display: none; }
+    body.lang-ne .ne { display: inline; }
+
+
+    /* --- Welcome → Auth overlay --- */
+    body.auth-locked { overflow: hidden; }
+    .auth-overlay { position: fixed; inset: 0; z-index: 200; display:flex; align-items:center; justify-content:center; padding:20px; background:linear-gradient(135deg,rgba(21,58,32,.42),rgba(31,77,44,.18)); backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%); opacity:0; visibility:hidden; transition:opacity .7s ease, visibility .7s ease; }
+    .auth-overlay.show { opacity:1; visibility:visible; }
+    .auth-card { width:min(470px,100%); position:relative; overflow:hidden; background:rgba(250,247,240,.94); border:1px solid rgba(255,255,255,.8); border-radius:24px; box-shadow:0 30px 90px rgba(10,35,18,.32); padding:34px; transform:translateY(28px) scale(.96); transition:transform .7s cubic-bezier(.16,1,.3,1); }
+    .auth-card:before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,var(--forest),var(--mustard)); }
+    .auth-overlay.show .auth-card { transform:translateY(0) scale(1); }
+    .auth-brand { font-family:var(--font-display); font-size:1.9rem; color:var(--forest-dark); margin-bottom:6px; letter-spacing:-.02em; }
+    .auth-card select { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; font:inherit; background:rgba(255,255,255,.85); color:var(--ink); }
+    .auth-card input { transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+    .auth-card input:focus { border-color:var(--forest); box-shadow:0 0 0 4px rgba(31,77,44,.1); }
+    .auth-card .cta { border-radius:9px; padding:12px 18px; box-shadow:0 8px 18px rgba(31,77,44,.18); }
+    .auth-sub { margin:0 0 22px; color:var(--ink-soft); font-size:.92rem; }
+    .auth-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; background:rgba(31,77,44,.08); padding:5px; border-radius:10px; margin-bottom:20px; }
+    .auth-tab { border:0; background:transparent; padding:10px; border-radius:7px; cursor:pointer; font:600 .9rem var(--font-body); color:var(--ink-soft); }
+    .auth-tab.active { background:white; color:var(--forest-dark); box-shadow:0 2px 8px rgba(0,0,0,.07); }
+    .auth-form { display:none; } .auth-form.active { display:block; animation:authFade .35s ease; }
+    .auth-form .form-row { margin-bottom:12px; }
+    .auth-form input { background:rgba(255,255,255,.85); }
+    .auth-note { text-align:center; margin:14px 0 0; font-size:.8rem; color:var(--ink-soft); }
+    .auth-note button { background:none; border:0; color:var(--forest-dark); font-weight:700; cursor:pointer; }
+    @keyframes authFade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+
+    /* Professional UI polish */
+    .cta { transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
+    .cta:hover { transform:translateY(-1px); box-shadow:0 8px 18px rgba(31,77,44,.16); }
+    .market-panel, .split, .conditions { box-shadow:0 12px 35px rgba(35,32,27,.06); }
+    .listing { transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .listing:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(35,32,27,.07); border-color:rgba(31,77,44,.28); }
+    .section-head h2 { letter-spacing:-.02em; }
+
+
+    /* Custom small Taaja Bazar hand cursor */
+    body.custom-hand-cursor, body.custom-hand-cursor * { cursor: none !important; }
+    #customHandCursor { position:fixed; left:0; top:0; width:28px; height:28px; z-index:9999; pointer-events:none; transform:translate(-2px,-2px) scale(.78); opacity:0; transition:opacity .18s ease, transform .12s ease; filter:drop-shadow(0 3px 4px rgba(0,0,0,.18)); }
+    body.custom-hand-cursor #customHandCursor { opacity:1; }
+    #customHandCursor svg { width:100%; height:100%; display:block; }
+    #customHandCursor.clicking { transform:translate(-2px,-2px) scale(.66); }
+    @media (pointer:coarse) { #customHandCursor { display:none; } body.custom-hand-cursor, body.custom-hand-cursor * { cursor:auto !important; } }
+
+    /* --- header --- */
+    header.site {
+      border-bottom: 1px solid var(--line);
+      background: rgba(250, 247, 240, 0.92);
+      backdrop-filter: blur(4px);
+      position: sticky; top: 0; z-index: 40;
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; max-width: 1120px; margin: 0 auto;
+      flex-wrap: wrap; row-gap: 10px;
+    }
+    .logo {
+      display: flex; align-items: baseline; gap: 8px;
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 1.6rem;
+      color: var(--forest-dark);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo .mark {
+      display: inline-block; width: 11px; height: 11px;
+      border-radius: 50%;
+      background: var(--mustard);
+      transform: translateY(-2px);
+    }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { font-size: 0.95rem; color: var(--ink-soft); font-weight: 500; white-space: nowrap; }
+    .nav-links a:hover { color: var(--forest-dark); }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .lang-btn {
+      border: 1px solid var(--line); background: transparent;
+      font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
+      padding: 7px 12px; border-radius: 6px; cursor: pointer; color: var(--ink);
+      white-space: nowrap;
+    }
+    .lang-btn:hover { border-color: var(--forest); }
+    .hamburger {
+      display: none; border: 1px solid var(--line); background: transparent;
+      border-radius: 6px; padding: 6px 11px; font-size: 1.15rem;
+      cursor: pointer; color: var(--ink);
+    }
+    .mobile-menu {
+      display: none; flex-direction: column; border-top: 1px solid var(--line);
+      padding: 10px 24px 18px; background: var(--paper);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { padding: 12px 0; font-size: 1rem; color: var(--ink); border-bottom: 1px solid var(--line); }
+    .mobile-menu-controls { display: flex; gap: 10px; margin-top: 14px; }
+    .cta {
+      background: var(--forest); color: var(--paper); border: none;
+      padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 0.92rem;
+      cursor: pointer; font-family: var(--font-body); display: inline-block; white-space: nowrap;
+    }
+    .cta:hover { background: var(--forest-dark); }
+    .cta.ghost { background: transparent; border: 1.5px solid var(--forest); color: var(--forest-dark); }
+    .cta.ghost:hover { background: var(--forest-light); }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hamburger { display: inline-block; }
+      .nav-right .lite-toggle-btn, .nav-right .lang-toggle-btn { display: none; }
+    }
+    @media (max-width: 480px) {
+      .nav { padding: 14px 16px; }
+      .cta { padding: 9px 13px; font-size: 0.85rem; }
+    }
+
+    /* --- HERO with real mountain background --- */
+    .hero {
+      padding: 0 0 40px;
+      position: relative;
+      overflow: hidden;
+      background: #dce9ea;
+      min-height: 500px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .hero-bg svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(250,247,240,0.15) 0%, rgba(250,247,240,0.75) 60%, var(--paper) 100%);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+      padding-top: 56px;
+    }
+    @keyframes heroReveal { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-grid > * { animation: heroReveal 0.7s ease both; }
+      .hero-grid > *:nth-child(2) { animation-delay: 0.12s; }
+    }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08; font-weight: 600; margin: 0 0 20px; color: var(--ink);
+    }
+    .hero p.lede {
+      font-size: 1.1rem; color: var(--ink-soft); max-width: 46ch;
+      margin: 0 0 28px;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
+    .stat-row {
+      display: flex; gap: 32px; border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+    .stat b { display: block; font-family: var(--font-display); font-size: 1.6rem; color: var(--forest-dark); }
+    .stat span { font-size: 0.85rem; color: var(--ink-soft); }
+
+    /* market panel */
+    .market-panel {
+      background: white; border: 1px solid var(--line); border-radius: 12px;
+      overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .market-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--paper-dim);
+    }
+    .market-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--forest); display: inline-block; margin-right: 8px; }
+    .market-head .label { font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); }
+    .market-search {
+      padding: 14px 18px; display: flex; gap: 8px; border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+    .market-search input, .market-search select {
+      font-family: var(--font-body); font-size: 0.88rem; padding: 8px 10px;
+      border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
+    }
+    .market-search input { flex: 1; min-width: 120px; }
+    .chips { display: flex; gap: 6px; padding: 12px 18px 0; flex-wrap: wrap; }
+    .chip {
+      font-size: 0.78rem; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line);
+      cursor: pointer; background: var(--paper); color: var(--ink-soft); font-weight: 500;
+    }
+    .chip.active { background: var(--forest); color: var(--paper); border-color: var(--forest); }
+    .listings {
+      padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px;
+      max-height: 420px; overflow-y: auto;
+    }
+    .listing {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--paper);
+    }
+    .crop-icon {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .crop-icon svg { width: 20px; height: 20px; }
+    .listing-body { flex: 1; min-width: 0; }
+    .listing-body .top { display: flex; justify-content: space-between; gap: 8px; }
+    .listing-body .crop-name { font-weight: 600; font-size: 0.94rem; }
+    .listing-body .price { font-weight: 700; color: var(--forest-dark); font-size: 0.94rem; white-space: nowrap; }
+    .listing-body .meta { font-size: 0.8rem; color: var(--ink-soft); margin-top: 2px; }
+    .listing .contact-btn {
+      font-size: 0.78rem; font-weight: 600; padding: 7px 11px; border-radius: 6px;
+      border: 1.5px solid var(--forest); color: var(--forest-dark); background: transparent;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .listing .contact-btn:hover { background: var(--forest); color: white; }
+    .listing .contact-btn.revealed { border-color: var(--mustard-dark); color: var(--soil); cursor: default; }
+    .empty-note { padding: 24px 18px; text-align: center; color: var(--ink-soft); font-size: 0.9rem; }
+    .listing.urgent { border-left: 3px solid var(--clay); }
+    .badge-row { display: flex; gap: 6px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
+    .badge { font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+    .badge.verified { background: var(--forest-light); color: var(--forest-dark); }
+    .badge.rescue { background: #f6e0da; color: var(--clay); }
+    .badge.rating { background: var(--paper-dim); color: var(--soil); }
+    .urgent-toggle {
+      display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink-soft);
+      padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+      background: var(--paper);
+    }
+    .urgent-toggle.active { background: var(--clay); color: white; border-color: var(--clay); }
+    .mic-btn {
+      border: 1px solid var(--line); background: var(--paper); border-radius: 6px;
+      padding: 0 12px; cursor: pointer; font-size: 1rem; flex-shrink: 0;
+    }
+    .mic-btn:hover { border-color: var(--forest); }
+    .mic-row { display: flex; gap: 6px; }
+    .mic-row input { flex: 1; }
+
+    /* low-data */
+    body.low-data .crop-icon { display: none; }
+    body.low-data header.site { position: static; }
+    body.low-data html { scroll-behavior: auto; }
+    body.low-data .badge.rating { display: none; }
+    body.low-data * { transition: none !important; }
+    body.low-data .hero-bg, body.low-data .hero-overlay { display: none; }
+
+    /* A11Y */
+    .a11y-fab {
+      position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px;
+      border-radius: 50%; background: var(--forest); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 6px 18px rgba(31,77,44,0.35); z-index: 70;
+    }
+    .a11y-fab:hover { background: var(--forest-dark); }
+    .a11y-panel {
+      position: fixed; right: 24px; bottom: 92px; width: 320px;
+      max-width: calc(100vw - 32px); max-height: 72vh; overflow-y: auto;
+      background: white; border: 1px solid var(--line); border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(35,32,27,0.2); z-index: 70; display: none;
+    }
+    .a11y-panel.open { display: block; }
+    .a11y-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; background: var(--forest); color: white;
+      border-radius: 14px 14px 0 0; font-weight: 600; font-size: 0.95rem;
+    }
+    .a11y-head button { background: none; border: none; color: white; font-size: 1.05rem; cursor: pointer; padding: 4px 7px; }
+    .a11y-head button:hover { opacity: 0.8; }
+    .a11y-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px;
+    }
+    .a11y-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      border: 1px solid var(--line); border-radius: 10px; padding: 14px 6px;
+      background: var(--paper); cursor: pointer; font-family: var(--font-body);
+      font-size: 0.78rem; font-weight: 600; color: var(--ink);
+    }
+    .a11y-card .a11y-icon { font-size: 1.25rem; font-family: var(--font-display); line-height: 1; }
+    .a11y-card:hover { border-color: var(--forest); }
+    .a11y-card.active { border-color: var(--forest); background: var(--forest-light); color: var(--forest-dark); }
+    @media (max-width:480px) {
+      .a11y-fab { right: 16px; bottom: 16px; width: 50px; height: 50px; }
+      .a11y-panel { right: 16px; bottom: 76px; }
+    }
+
+    /* sections */
+    .section { padding: 64px 0; border-top: 1px solid var(--line); }
+    .section-head { max-width: 52ch; margin-bottom: 40px; }
+    .section-head h2 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 600; margin: 0 0 10px; }
+    .section-head p { color: var(--ink-soft); margin: 0; }
+
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; }
+    @media (max-width:800px) { .steps { grid-template-columns: 1fr; } }
+    .step { display: flex; gap: 16px; }
+    .step .num {
+      font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+      color: var(--mustard-dark); flex-shrink: 0; width: 38px;
+    }
+    .step h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .step p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    @media (max-width:820px) { .split { grid-template-columns: 1fr; } }
+    .split-panel { padding: 36px; }
+    .split-panel.farmers { background: var(--forest-light); border-right: 1px solid var(--line); }
+    .split-panel.buyers { background: white; }
+    .split-panel h3 { font-family: var(--font-display); font-size: 1.4rem; margin: 0 0 14px; }
+    .split-panel ul { margin: 0 0 22px; padding-left: 20px; color: var(--ink-soft); }
+    .split-panel li { margin-bottom: 8px; font-size: 0.94rem; }
+    .form-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    @media (max-width:480px) { .form-grid { grid-template-columns: 1fr; } }
+    label { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; display: block; }
+    input, select {
+      width: 100%; font-family: var(--font-body); font-size: 0.92rem;
+      padding: 10px 11px; border: 1px solid var(--line); border-radius: 6px;
+      background: white; color: var(--ink);
+    }
+    input:focus, select:focus, .lang-btn:focus, .cta:focus, .contact-btn:focus, .chip:focus {
+      outline: 2px solid var(--forest); outline-offset: 2px;
+    }
+    .toast {
+      margin-top: 12px; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem;
+      background: var(--forest-light); color: var(--forest-dark); border: 1px solid var(--forest);
+      display: none;
+    }
+    .toast.show { display: block; }
+
+    .trust-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+    @media (max-width:800px) { .trust-grid { grid-template-columns: 1fr; } }
+    .trust-item { border-top: 2px solid var(--mustard); padding-top: 14px; }
+    .trust-item h4 { margin: 0 0 6px; font-size: 1rem; }
+    .trust-item p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+
+    .conditions {
+      background: var(--forest-dark); color: var(--paper); border-radius: 10px;
+      padding: 40px;
+    }
+    .conditions h2 { font-family: var(--font-display); font-size: 1.7rem; margin: 0 0 14px; color: white; }
+    .conditions p { color: #d7e2d9; max-width: 60ch; margin: 0 0 24px; }
+    .cond-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    @media (max-width:800px) { .cond-list { grid-template-columns: 1fr; } }
+    .cond-list div { border-left: 2px solid var(--mustard); padding-left: 14px; }
+    .cond-list h5 { margin: 0 0 4px; font-size: 0.95rem; color: white; }
+    .cond-list p { margin: 0; font-size: 0.85rem; color: #c9d6cb; }
+
+    footer { border-top: 1px solid var(--line); padding: 32px 0; }
+    .foot-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; align-items: center; }
+    .foot-row p { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+
+    /* extra polish */
+    .badge.phone-verified { background: #d4e6d4; color: #1f4d2c; }
+    .real-phone { font-weight: 600; color: var(--forest-dark); }
+
+    /* Full-screen success welcome animation */
+    .welcome-overlay{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(21,58,32,.18);backdrop-filter:none;-webkit-backdrop-filter:none;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;pointer-events:none;}
+    .welcome-overlay.show{opacity:1;visibility:visible;}
+    .welcome-content{text-align:center;color:white;background:rgba(21,58,32,.82);border:1px solid rgba(255,255,255,.22);border-radius:28px;box-shadow:0 25px 70px rgba(10,35,18,.25);transform:scale(.85) translateY(20px);opacity:0;transition:all .5s cubic-bezier(.2,.9,.2,1);padding:38px 46px;}
+    .welcome-overlay.show .welcome-content{transform:scale(1) translateY(0);opacity:1;}
+    .welcome-check{width:86px;height:86px;margin:0 auto 22px;border:2px solid rgba(255,255,255,.8);border-radius:50%;display:grid;place-items:center;font-size:2.7rem;animation:welcomePulse 1.4s ease-in-out infinite;}
+    .welcome-content h2{font-family:var(--font-display);font-size:clamp(2.3rem,6vw,4.8rem);margin:0 0 12px;letter-spacing:-.03em;}
+    .welcome-content p{margin:0;color:#d7e2d9;font-size:1.05rem;}
+    @keyframes welcomePulse{50%{transform:scale(1.08);box-shadow:0 0 0 18px rgba(227,160,8,.12)}}
+  
+/* Marketplace upgrade */
+<<<<<<< HEAD
+.market-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.market-tools select{padding:10px 12px;border:1px solid var(--paper-dim);border-radius:10px;background:#fff;color:var(--ink)}.save-btn{border:1px solid var(--paper-dim);background:#fff;border-radius:10px;padding:9px 11px;font-size:1rem;cursor:pointer}.save-btn.saved{background:#fff0f0;border-color:#efb1b1}    .upgrade-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.upgrade-card{background:#fff;border:1px solid var(--paper-dim);border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(31,77,44,.06)}.saved-list{display:flex;flex-direction:column;gap:10px}.saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:var(--paper)}.empty-saved{color:var(--ink-soft);font-size:.92rem}.quick-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.quick-tag{border:0;background:var(--forest-light);color:var(--forest-dark);padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}@media(max-width:760px){.upgrade-grid{grid-template-columns:1fr}.market-tools{align-items:stretch}.market-tools select{flex:1}}
+
+    /* Taaja Bazar visual refresh */
+    :root {
+      --g: #0f0;
+      --accent: #00FF00;
+      --forest: #172019;
+      --forest-dark: #101710;
+      --forest-light: #e8f4e7;
+      --mustard: #00FF00;
+      --mustard-dark: #167a20;
+      --soil: #596552;
+      --paper: #f5f7f3;
+      --paper-dim: #edf1eb;
+      --ink: #172019;
+      --ink-soft: #667168;
+      --clay: #b94a3b;
+      --line: rgba(23,32,25,.12);
+      --font-display: 'Work Sans', system-ui, sans-serif;
+    }
+    body { background:#f5f7f3; color:#172019; }
+    .wrap { max-width:1240px; }
+    header.site {
+      background:rgba(250,252,249,.94);
+      border-bottom:1px solid rgba(23,32,25,.09);
+      box-shadow:0 4px 20px rgba(17,30,18,.035);
+      backdrop-filter:blur(16px);
+    }
+    .nav { min-height:76px; max-width:1240px; }
+    .logo { font-family:var(--font-body); font-size:1.42rem; letter-spacing:-.06em; color:#172019; }
+    .logo .mark { width:10px; height:10px; background:var(--g); box-shadow:0 0 14px rgba(0,255,0,.4); }
+    .nav-links { gap:30px; }
+    .nav-links a { font-size:.88rem; color:#657168; transition:color .2s ease; }
+    .nav-links a:hover { color:#172019; }
+    .lang-btn { border-radius:999px; padding:9px 14px; background:#fff; }
+    .cta {
+      background:var(--g); color:#101710; border-radius:999px; padding:12px 20px;
+      font-weight:700; letter-spacing:-.015em; box-shadow:0 7px 20px rgba(0,255,0,.15);
+    }
+    .cta:hover { background:#00df00; color:#101710; box-shadow:0 10px 24px rgba(0,255,0,.22); }
+    .cta.ghost { background:rgba(255,255,255,.07); color:#fff; border:1px solid rgba(255,255,255,.36); box-shadow:none; }
+    .cta.ghost:hover { background:rgba(255,255,255,.14); }
+    .hamburger { border-radius:10px; }
+    .mobile-menu { background:#fbfcfa; }
+    .hero {
+      min-height:690px; padding:0 0 76px; background:#101710;
+      border-radius:0 0 34px 34px; isolation:isolate;
+    }
+    .hero-bg { opacity:.62; }
+    .hero-bg svg { filter:saturate(.58) contrast(1.08); }
+    .hero-overlay {
+      background:
+        radial-gradient(ellipse at 75% 42%,rgba(0,255,0,.12),transparent 40%),
+        linear-gradient(90deg,rgba(13,20,14,.98) 0%,rgba(13,20,14,.88) 43%,rgba(13,20,14,.46) 100%),
+        linear-gradient(180deg,rgba(13,20,14,.08) 0%,rgba(13,20,14,.42) 65%,#101710 100%);
+    }
+    .hero-grid {
+      grid-template-columns:minmax(0,.92fr) minmax(490px,1.08fr); gap:64px;
+      align-items:center; padding-top:82px;
+    }
+    .hero-grid > div:first-child::before {
+      content:"NEPAL'S DIRECT FARM MARKET";
+      display:inline-flex; align-items:center; gap:9px; margin-bottom:22px;
+      padding-left:16px; color:#bdc9bc; font-size:.72rem; font-weight:700; letter-spacing:.14em;
+      background:radial-gradient(circle,var(--g) 0 3px,transparent 4px) left center/7px 7px no-repeat;
+    }
+    h1 { max-width:650px; font-size:clamp(3rem,5.2vw,5.1rem); line-height:1.02; font-weight:600; letter-spacing:-.07em; color:#f6faf4; }
+    .hero p.lede { max-width:49ch; color:#c0c9bf; font-size:1.02rem; line-height:1.8; }
+    .hero-ctas { margin-bottom:42px; }
+    .hero-ctas .cta { padding:14px 22px; }
+    .stat-row { max-width:470px; gap:0; border-color:rgba(255,255,255,.18); padding-top:22px; }
+    .stat { flex:1; }
+    .stat + .stat { padding-left:20px; border-left:1px solid rgba(255,255,255,.17); }
+    .stat b { font-family:var(--font-body); font-size:1.42rem; color:var(--g); letter-spacing:-.05em; }
+    .stat span { color:#b5c0b4; font-size:.74rem; }
+    .market-panel {
+      border:1px solid rgba(255,255,255,.55); border-radius:20px; overflow:hidden;
+      background:#fbfcfa; box-shadow:0 28px 80px rgba(0,0,0,.3);
+    }
+    .market-head { background:#fff; padding:19px 22px; }
+    .market-head .dot { width:9px; height:9px; background:#16b83d; box-shadow:0 0 0 4px rgba(22,184,61,.12); }
+    .market-head .label { font-size:.8rem; color:#58645a; }
+    .market-search { padding:16px 20px 10px; border:0; }
+    .market-search input, .market-search select, .market-tools select {
+      min-height:44px; border-radius:10px; border-color:#e4e9e2; background:#f7f9f6; padding:10px 13px;
+    }
+    input:focus, select:focus, .lang-btn:focus, .cta:focus, .contact-btn:focus, .chip:focus {
+      outline:3px solid rgba(0,200,0,.36); outline-offset:2px;
+    }
+    .urgent-toggle { min-height:42px; border-radius:10px; background:#fff; }
+    .urgent-toggle.active { background:#b94a3b; }
+    .market-tools { margin:0 20px 3px; }
+    .market-tools select { width:100%; }
+    .chips { padding:12px 20px 0; gap:7px; }
+    .chip { background:#fff; border-color:#e4e9e2; border-radius:999px; padding:7px 12px; }
+    .chip.active { background:#172019; color:#fff; border-color:#172019; }
+    .listings { padding:14px 20px 20px; max-height:350px; gap:9px; }
+    .listing { background:#fff; border-color:#e8ece6; border-radius:12px; padding:12px; gap:11px; }
+    .listing:hover { transform:translateY(-1px); border-color:rgba(0,170,0,.3); box-shadow:0 8px 22px rgba(19,39,20,.07); }
+    .listing-body .crop-name,.listing-body .price { font-size:.9rem; }
+    .listing-body .price { color:#176b27; }
+    .listing-body .meta { font-size:.75rem; color:#758076; }
+    .listing .contact-btn { border:0; border-radius:999px; background:#eff5ed; color:#1e5728; padding:8px 13px; }
+    .listing .contact-btn:hover { background:var(--g); color:#101710; }
+    .listing .contact-btn.revealed { background:#eff5ed; color:#596552; }
+    .badge { border-radius:999px; font-size:.66rem; }
+    .badge.verified { background:#e9f6e8; color:#176b27; }
+    .badge.rating { background:#f1f3ef; color:#596552; }
+    .section { padding:88px 0; border-color:rgba(23,32,25,.08); }
+    .section-head { max-width:62ch; margin-bottom:38px; }
+    .section-head h2 { font-size:clamp(1.8rem,3vw,2.55rem); font-weight:600; letter-spacing:-.055em; line-height:1.12; }
+    .section-head p { color:#68746a; line-height:1.75; }
+    #market-upgrade { padding-top:54px; }
+    .upgrade-card {
+      border-color:#e6ebe4; border-radius:18px; padding:26px;
+      box-shadow:0 12px 35px rgba(24,38,25,.045);
+    }
+    .upgrade-card h3 { margin-top:0; letter-spacing:-.025em; }
+    .quick-tag { border:1px solid #dfe8dc; background:#f2f7f0; border-radius:999px; transition:all .2s ease; }
+    .quick-tag:hover { background:var(--g); color:#101710; }
+    .save-btn { border-radius:50%; }
+    .saved-item { background:#f4f7f2; border:1px solid #e8ede6; }
+    .steps { gap:18px; }
+    .step {
+      min-height:168px; display:block; padding:25px; border:1px solid #e5eae3;
+      border-radius:16px; background:#fff; box-shadow:0 10px 28px rgba(24,38,25,.035);
+    }
+    .step .num {
+      display:grid; place-items:center; width:38px; height:38px; margin-bottom:20px;
+      border-radius:12px; background:#e9f8e7; color:#147323; font:700 .95rem var(--font-body);
+    }
+    .step h3 { font-size:1rem; letter-spacing:-.025em; }
+    .step p { color:#68746a; line-height:1.7; }
+    .split { border:0; border-radius:20px; gap:16px; overflow:visible; box-shadow:none; }
+    .split-panel { padding:36px; border:1px solid #e5eae3; border-radius:18px; }
+    .split-panel.farmers { background:#edf6e9; border-right:1px solid #e0eadc; }
+    .split-panel.buyers { background:#fff; }
+    .split-panel h3 { font-size:1.55rem; letter-spacing:-.04em; }
+    .split-panel ul { line-height:1.75; }
+    .trust-grid { gap:18px; }
+    .trust-item { padding:20px; border:1px solid #e5eae3; border-top:3px solid var(--g); border-radius:14px; background:#fff; }
+    .conditions { border-radius:20px; padding:48px; background:#172019; }
+    .conditions h2 { font-family:var(--font-body); letter-spacing:-.045em; font-size:2rem; }
+    .cond-list { gap:26px; }
+    .cond-list div { border-color:var(--g); }
+    footer { padding:36px 0; background:#f0f3ee; }
+    .auth-overlay { background:rgba(13,20,14,.72); backdrop-filter:blur(12px); }
+    .auth-card { border-radius:22px; box-shadow:0 30px 100px rgba(0,0,0,.35); }
+    .auth-card:before { background:var(--g); }
+    .auth-brand { font-family:var(--font-body); letter-spacing:-.055em; }
+    .auth-tabs { border-radius:12px; }
+    .auth-tab.active { color:#152018; }
+    .a11y-fab { background:#172019; border:2px solid rgba(0,255,0,.55); }
+    .a11y-fab:hover { background:#263429; }
+    .a11y-head { background:#172019; }
+    .a11y-card.active { border-color:#159128; background:#e9f8e7; color:#145c20; }
+    .welcome-content { background:rgba(16,23,16,.94); border-radius:24px; }
+    .welcome-check { border-color:var(--g); color:var(--g); }
+    @media (max-width:900px) {
+      .hero { min-height:0; padding-bottom:54px; }
+      .hero-grid { grid-template-columns:1fr; gap:38px; padding-top:58px; }
+      .hero-grid > div:first-child { max-width:700px; }
+      .market-panel { max-width:760px; width:100%; margin:0 auto; }
+    }
+    @media (max-width:600px) {
+      .wrap { padding:0 18px; }
+      .nav { padding:13px 18px; }
+      .nav-right { gap:8px; }
+      .nav-right > .cta { padding:10px 13px; font-size:.76rem; }
+      .hero { border-radius:0 0 22px 22px; padding-bottom:30px; }
+      .hero-grid { padding-top:48px; gap:30px; }
+      h1 { font-size:clamp(2.65rem,12vw,4rem); }
+      .hero p.lede { font-size:.94rem; }
+      .hero-ctas { gap:9px; margin-bottom:30px; }
+      .hero-ctas .cta { padding:12px 15px; font-size:.82rem; }
+      .stat-row { gap:10px; }
+      .stat + .stat { padding-left:10px; }
+      .stat b { font-size:1.2rem; }
+      .stat span { font-size:.68rem; }
+      .market-panel { border-radius:16px; }
+      .market-search { padding-left:14px; padding-right:14px; }
+      .market-tools { margin-left:14px; margin-right:14px; }
+      .chips { padding-left:14px; padding-right:14px; }
+      .listings { padding-left:14px; padding-right:14px; }
+      .listing { gap:8px; padding:10px; }
+      .listing .contact-btn { padding:7px 9px; font-size:.72rem; }
+      .listing-body .top { flex-wrap:wrap; gap:2px 6px; }
+      .section { padding:62px 0; }
+      .steps { gap:12px; }
+      .step { min-height:0; padding:20px; }
+      .split-panel { padding:25px; }
+      .conditions { padding:30px 24px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    }
+    .hero {
+      min-height:760px; padding:0; border-radius:0 0 34px 34px;
+      background:
+        radial-gradient(ellipse at 75% 46%,rgba(0,255,0,.1),transparent 30%),
+        radial-gradient(ellipse at 53% 100%,rgba(25,63,33,.52),transparent 53%),
+        #101710;
+    }
+    .hero-bg { opacity:.15; }
+    .hero-overlay {
+      z-index:1;
+      background:
+        radial-gradient(ellipse at 77% 48%,rgba(0,255,0,.09),transparent 34%),
+        linear-gradient(90deg,rgba(13,20,14,.98) 0%,rgba(13,20,14,.94) 30%,rgba(13,20,14,.52) 57%,rgba(13,20,14,.16) 100%),
+        linear-gradient(180deg,rgba(13,20,14,.1) 0%,transparent 60%,#101710 100%);
+    }
+    body.scene-ready .hero-bg { opacity:0; }
+    .hero-art { position:absolute; inset:0; z-index:2; pointer-events:none; overflow:hidden; }
+    #heroCanvas { display:block; width:100%; height:100%; opacity:.96; }
+    .scene-orbit-label {
+      position:absolute; display:flex; flex-direction:column; gap:4px;
+      color:rgba(242,248,240,.72); font-size:.69rem; letter-spacing:.03em;
+      text-shadow:0 2px 16px rgba(0,0,0,.7); opacity:0; transition:opacity .7s ease;
+    }
+    .scene-ready .scene-orbit-label { opacity:1; }
+    .scene-orbit-label-top { top:15%; right:8%; flex-direction:row; align-items:center; gap:10px; font-size:.63rem; font-weight:700; letter-spacing:.13em; }
+    .scene-live-dot,.section-live-dot { width:7px; height:7px; border-radius:50%; flex:none; background:var(--g); box-shadow:0 0 14px rgba(0,255,0,.8); }
+    .scene-orbit-label-bottom { right:7%; bottom:11%; text-align:right; }
+    .scene-coordinate { color:var(--g); font:600 .68rem var(--font-body); letter-spacing:.12em; }
+    .hero-grid {
+      position:relative; z-index:3; display:flex; align-items:center;
+      min-height:760px; padding-top:80px; padding-bottom:70px;
+    }
+    .hero-grid > div:first-child { width:min(560px,54%); }
+    .hero-grid > div:first-child::before { display:none; }
+    .hero-kicker {
+      display:flex; align-items:center; gap:10px; margin-bottom:23px;
+      color:#c6d0c3; font-size:.7rem; font-weight:700; letter-spacing:.17em; text-transform:uppercase;
+    }
+    .hero-kicker::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--g); box-shadow:0 0 15px var(--g); }
+    .hero h1 {
+      max-width:570px; margin-bottom:22px; color:#f5f8f3;
+      font-size:clamp(3.3rem,5.25vw,5.25rem); line-height:.98; letter-spacing:-.078em; font-weight:600;
+    }
+    .hero p.lede { max-width:48ch; font-size:1rem; line-height:1.82; color:#bac5b8; }
+    .hero-ctas { margin-top:32px; margin-bottom:42px; }
+    .hero-ctas .cta { padding:14px 21px; }
+    .stat-row { max-width:455px; }
+    .marketplace-section { padding:96px 0 90px; background:#f6f8f4; }
+    .marketplace-layout { display:grid; grid-template-columns:minmax(230px,.72fr) minmax(0,1.28fr); align-items:start; gap:74px; }
+    .marketplace-intro { padding-top:24px; }
+    .section-eyebrow { display:flex; align-items:center; gap:9px; color:#6b766b; font-size:.68rem; font-weight:700; letter-spacing:.16em; }
+    .section-live-dot { width:7px; height:7px; background:#17b83e; box-shadow:0 0 12px rgba(23,184,62,.45); }
+    .marketplace-intro h2 {
+      margin:26px 0 18px; font-size:clamp(2.6rem,4vw,4.35rem);
+      line-height:.99; font-weight:600; letter-spacing:-.075em; color:#182119;
+    }
+    .marketplace-intro h2 span { color:#7b877c; }
+    .marketplace-intro > p { max-width:37ch; margin:0; color:#667168; font-size:.95rem; line-height:1.85; }
+    .marketplace-proof { display:flex; align-items:flex-start; gap:12px; margin-top:32px; color:#6b766b; font-size:.76rem; line-height:1.7; }
+    .marketplace-proof strong { color:#202a21; font-size:.79rem; }
+    .proof-mark { display:grid; place-items:center; width:25px; height:25px; flex:none; border-radius:50%; background:#e1f6df; color:#126c24; font-size:.78rem; font-weight:800; }
+    .marketplace-seller-link { display:inline-flex; flex-direction:column; gap:6px; margin-top:34px; color:#788278; font-size:.77rem; }
+    .marketplace-seller-link span { color:#1b5726; font-weight:700; }
+    .marketplace-section .market-panel { max-width:none; width:100%; margin:0; border-color:#e5eae3; box-shadow:0 26px 70px rgba(25,41,26,.1); }
+    .marketplace-section .listings { max-height:430px; }
+    @media (max-width:900px) {
+      .hero { min-height:680px; }
+      .hero-grid { min-height:680px; padding-top:70px; padding-bottom:50px; }
+      .hero-grid > div:first-child { width:min(560px,72%); }
+      .hero h1 { font-size:clamp(3.2rem,7vw,5rem); }
+      .marketplace-layout { grid-template-columns:1fr; gap:34px; }
+      .marketplace-intro { padding-top:0; }
+      .marketplace-intro h2 { font-size:clamp(2.8rem,8vw,4rem); }
+      .marketplace-intro > p { max-width:56ch; }
+      .marketplace-intro h2 br { display:none; }
+      .marketplace-proof,.marketplace-seller-link { display:none; }
+    }
+    @media (max-width:600px) {
+      .hero { min-height:900px; border-radius:0 0 24px 24px; }
+      .hero-grid { min-height:700px; align-items:flex-start; padding-top:86px; padding-bottom:42px; }
+      .hero-grid > div:first-child { width:100%; }
+      .hero h1 { max-width:540px; font-size:clamp(3.2rem,14vw,5rem); }
+      .hero p.lede { max-width:40ch; font-size:.9rem; }
+      .hero-ctas { gap:9px; margin-top:25px; margin-bottom:31px; }
+      .hero-ctas .cta { padding:12px 15px; font-size:.79rem; }
+      .stat-row { max-width:430px; }
+      .hero-art { top:650px; bottom:15px; }
+      #heroCanvas { opacity:.78; }
+      .hero-art::before {
+        content:""; position:absolute; z-index:1; inset:0; pointer-events:none;
+        background:linear-gradient(180deg,#101710 0%,rgba(16,23,16,.12) 24%,transparent 55%);
+      }
+      .hero-overlay {
+        background:
+          linear-gradient(90deg,rgba(13,20,14,.9),rgba(13,20,14,.5)),
+          linear-gradient(180deg,rgba(13,20,14,.14),rgba(13,20,14,.15) 48%,#101710 100%);
+      }
+      .scene-orbit-label-top { display:flex; top:5%; right:7%; font-size:.52rem; }
+      .scene-orbit-label-bottom { display:flex; right:7%; bottom:4%; font-size:.59rem; }
+      .marketplace-section { padding:60px 0 64px; }
+      .marketplace-layout { gap:25px; }
+      .marketplace-intro h2 { margin:18px 0 12px; font-size:2.9rem; }
+      .marketplace-intro > p { font-size:.88rem; }
+    }
+    @media (max-width:370px) {
+      .hero-ctas .cta { padding:11px 12px; font-size:.74rem; }
+      .hero h1 { font-size:3rem; }
+      .stat span { font-size:.62rem; }
+    }
+    body.low-data .hero-art { display:none; }
+=======
+.market-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.market-tools select{padding:10px 12px;border:1px solid var(--paper-dim);border-radius:10px;background:#fff;color:var(--ink)}.save-btn{border:1px solid var(--paper-dim);background:#fff;border-radius:10px;padding:9px 11px;font-size:1rem;cursor:pointer}.save-btn.saved{background:#fff0f0;border-color:#efb1b1}.upgrade-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.upgrade-card{background:#fff;border:1px solid var(--paper-dim);border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(31,77,44,.06)}.saved-list{display:flex;flex-direction:column;gap:10px}.saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:var(--paper)}.empty-saved{color:var(--ink-soft);font-size:.92rem}.quick-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.quick-tag{border:0;background:var(--forest-light);color:var(--forest-dark);padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}@media(max-width:760px){.upgrade-grid{grid-template-columns:1fr}.market-tools{align-items:stretch}.market-tools select{flex:1}}
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+</style>
+</head>
+<body>
+<div class="welcome-overlay" id="welcomeOverlay" aria-hidden="true"><div class="welcome-content"><div class="welcome-check">✓</div><h2>Welcome to Taaja<span style="color:var(--mustard)">Bazar</span></h2><p id="welcomeMessage">Your direct marketplace is ready.</p></div></div>
+
+<div id="customHandCursor" aria-hidden="true"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M12 29c-2 0-3-1-4-3l-3-6c-.6-1.3-.1-2.5.9-3s2.1-.1 2.8 1l1.3 2V8c0-1.2.8-2 1.9-2s2 1 2 2v8-10c0-1.1.8-2 1.9-2s2 1 2 2v10-8c0-1.1.8-2 1.9-2s2 1 2 2v10c.4-.6 1.1-1 1.8-1 .7 0 1.3.3 1.7.9.4.6.4 1.3.1 2L24 27c-.8 1.3-2.2 2-3.8 2H12z" fill="#f8e3c2" stroke="#1f4d2c" stroke-width="1.6" stroke-linejoin="round"/><path d="M11.8 8v8M15.7 6v10M19.6 8v9" stroke="#b57e05" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+<!-- Smooth registration / login gate -->
+<div class="auth-overlay" id="authOverlay" aria-hidden="true">
+  <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div style="display:inline-flex;align-items:center;gap:7px;background:var(--forest-light);color:var(--forest-dark);padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:700;margin-bottom:12px">● DIRECT FARM-TO-BUYER MARKET</div><div class="auth-brand">Welcome to Taaja<span style="color:var(--mustard-dark)">Bazar</span></div>
+    <p class="auth-sub" id="authTitle">Join the direct marketplace for farmers and buyers.</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth="login">Login</button>
+      <button class="auth-tab" data-auth="register">Register</button>
+    </div>
+    <form class="auth-form active" id="loginForm">
+      <div class="form-row"><label>Registered phone number</label><input type="tel" id="loginIdentity" required placeholder="98XXXXXXXX" inputmode="numeric" maxlength="10"></div>
+      <div class="form-row"><label>Password</label><input type="password" id="loginPassword" required placeholder="Enter your password"></div>
+      <button class="cta" type="submit" style="width:100%">Login to continue</button>
+      <p class="auth-note">New here? <button type="button" data-switch="register">Create an account</button></p>
+    </form>
+    <form class="auth-form" id="registerForm">
+      <div class="form-row"><label>Full name</label><input type="text" id="registerName" required placeholder="Your full name"></div>
+      <div class="form-row"><label>Phone number</label><input type="tel" id="registerPhone" required placeholder="98XXXXXXXX" inputmode="numeric" maxlength="10"></div>
+      <div class="form-row"><label>I am joining as</label><select id="registerRole" required><option value="farmer">👨‍🌾 Farmer — Sell harvest</option><option value="buyer">🛒 Buyer — Buy directly</option></select></div><div class="form-row"><label>Create password</label><input type="password" id="registerPassword" required placeholder="Create a password"></div>
+      <button class="cta" type="submit" style="width:100%">Create account</button>
+      <p class="auth-note">Already have an account? <button type="button" data-switch="login">Login</button></p>
+    </form>
+  </div>
+</div>
+
+<header class="site">
+  <div class="nav">
+    <a href="#" class="logo"><span class="mark"></span>Taaja<span style="color:var(--mustard-dark)">Bazar</span></a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#farmers">For farmers</a>
+      <a href="#buyers">For buyers</a>
+    </nav>
+    <div class="nav-right">
+      <button class="lang-btn lite-toggle-btn" id="dataToggle" title="Low data mode">🟢 <span class="en">Lite</span><span class="ne">लाइट</span></button>
+      <button class="lang-btn lang-toggle-btn" id="langToggle">नेपाली</button>
+      <a href="#farmers" class="cta"><span class="en">List your harvest</span><span class="ne">उब्जनी सूचीमा राख्नुहोस्</span></a>
+      <button class="lang-btn" id="profileBtn" style="display:none">👤 <span id="profileName">Profile</span></button><button class="hamburger" id="hamburgerBtn" aria-label="Menu">☰</button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#how">How it works</a>
+    <a href="#farmers">For farmers</a>
+    <a href="#buyers">For buyers</a>
+    <div class="mobile-menu-controls">
+      <button class="lang-btn lite-toggle-btn" id="dataToggleMobile">🟢 <span class="en">Lite</span><span class="ne">लाइट</span></button>
+      <button class="lang-btn lang-toggle-btn" id="langToggleMobile">नेपाली</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- sky gradient -->
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b3d9e8"/>
+          <stop offset="40%" stop-color="#dce9ea"/>
+          <stop offset="100%" stop-color="#f0f2e9"/>
+        </linearGradient>
+        <linearGradient id="snowGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f0f6f7"/>
+          <stop offset="100%" stop-color="#d4e0e3"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="520" fill="url(#skyGrad)"/>
+
+      <!-- far distant snow peaks (Annapurna / Machhapuchhare style) -->
+      <g opacity="0.95">
+        <polygon points="0,220 90,60 150,140 230,20 320,220" fill="#eef5f5"/>
+        <polygon points="40,220 90,60 110,120 150,140 130,220" fill="url(#snowGrad)"/>
+        <polygon points="180,220 230,20 250,90 270,220" fill="url(#snowGrad)"/>
+
+        <polygon points="520,220 600,70 670,160 760,40 860,220" fill="#eef5f5"/>
+        <polygon points="570,220 600,70 620,130 670,160 640,220" fill="url(#snowGrad)"/>
+        <polygon points="720,220 760,40 790,100 810,220" fill="url(#snowGrad)"/>
+
+        <polygon points="980,220 1060,80 1130,170 1200,60 1200,220" fill="#eef5f5"/>
+        <polygon points="1020,220 1060,80 1080,140 1130,170 1100,220" fill="url(#snowGrad)"/>
+      </g>
+
+      <!-- mid hills with forest -->
+      <polygon points="0,250 200,180 450,240 700,170 950,250 1200,200 1200,520 0,520" fill="#6d8f72"/>
+      <polygon points="0,290 250,230 500,280 750,220 1050,285 1200,250 1200,520 0,520" fill="#4f7a55"/>
+
+      <!-- terraced fields (farming landscape) -->
+      <rect x="0" y="320" width="1200" height="12" fill="#3d6b3d" opacity="0.5"/>
+      <rect x="0" y="350" width="1200" height="12" fill="#3d6b3d" opacity="0.5"/>
+      <rect x="0" y="380" width="1200" height="12" fill="#3d6b3d" opacity="0.5"/>
+      <rect x="0" y="410" width="1200" height="12" fill="#3d6b3d" opacity="0.5"/>
+
+      <!-- golden mustard field accent -->
+      <polygon points="0,440 150,420 300,440 500,425 700,445 900,420 1200,440 1200,520 0,520" fill="#e3a008" opacity="0.3"/>
+
+      <!-- foreground grass -->
+      <polygon points="0,520 0,470 180,485 380,460 600,490 820,465 1050,490 1200,475 1200,520" fill="#1f4d2c" opacity="0.9"/>
+    </svg>
+  </div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+<<<<<<< HEAD
+  <div class="hero-art" aria-hidden="true">
+    <canvas id="heroCanvas"></canvas>
+    <div class="scene-orbit-label scene-orbit-label-top">
+      <span class="scene-live-dot"></span>
+      <span>GROWN HERE. MOVES DIRECT.</span>
+    </div>
+    <div class="scene-orbit-label scene-orbit-label-bottom">
+      <span class="scene-coordinate">27°42′ N &nbsp;·&nbsp; 85°19′ E</span>
+      <span>Fresh from the farms of Nepal</span>
+    </div>
+  </div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-kicker">Nepal's direct farm market</div>
+=======
+  <div class="wrap hero-grid">
+    <div>
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+      <h1>
+        <span class="en">Sell what you grow, straight to the buyer.</span>
+        <span class="ne">आफूले उब्जाएको सामान सीधै खरीददारसम्म पुर्‍याउनुहोस्।</span>
+      </h1>
+      <p class="lede">
+        <span class="en">Every hand a sack of vegetables passes through takes a cut before it reaches you. Taaja Bazar connects farmers directly with restaurants, hostels, and bulk buyers nearby — no middlemen, no listing fees.</span>
+        <span class="ne">तरकारीको बोरा तपाईंसम्म फर्किंदा धेरै हातबाट भाग लिन्छ। ताजा बजारले किसानलाई सीधै नजिकैका होटल, होस्टेल र थोक खरीददारसँग जोड्छ — बिचौलिया छैन, सूची शुल्क छैन।</span>
+      </p>
+      <div class="hero-ctas">
+        <a href="#farmers" class="cta"><span class="en">List your harvest</span><span class="ne">उब्जनी राख्नुहोस्</span></a>
+<<<<<<< HEAD
+        <a href="#marketplace" class="cta ghost"><span class="en">Browse today's harvest</span><span class="ne">आजको उब्जनी हेर्नुहोस्</span></a>
+=======
+        <a href="#buyers" class="cta ghost"><span class="en">Browse today's harvest</span><span class="ne">आजको उब्जनी हेर्नुहोस्</span></a>
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>0%</b><span class="en">listing commission</span><span class="ne">सूची कमिसन</span></div>
+        <div class="stat"><b>4</b><span class="en">districts live now</span><span class="ne">जिल्लामा उपलब्ध</span></div>
+<<<<<<< HEAD
+        <div class="stat"><b>100%</b><span class="en">direct grower contact</span><span class="ne">किसानसँग सीधा सम्पर्क</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="marketplace-section" id="marketplace">
+  <div class="wrap marketplace-layout">
+    <div class="marketplace-intro">
+      <span class="section-eyebrow"><span class="section-live-dot"></span>THE HARVEST BOARD</span>
+      <h2>Good food.<br>Fair prices.<br><span>Zero middlemen.</span></h2>
+      <p>Real harvests from farms across Nepal. Browse what is fresh, compare prices, and speak directly with the grower.</p>
+      <div class="marketplace-proof">
+        <span class="proof-mark">✓</span>
+        <span><strong>Direct from the grower</strong><br>Every listing comes with its own local story.</span>
+      </div>
+      <a href="#farmers" class="marketplace-seller-link">Are you a farmer? <span>List your harvest ↗</span></a>
+    </div>
+    <div class="market-panel" id="market-panel">
+=======
+        <div class="stat"><b>&lt;50KB</b><span class="en">page weight, works on 2G</span><span class="ne">पेज साइज, 2G मा चल्छ</span></div>
+      </div>
+    </div>
+
+    <div class="market-panel">
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+      <div class="market-head">
+        <span><span class="dot"></span><span class="label"><span class="en">Live listings</span><span class="ne">प्रत्यक्ष सूची</span></span></span>
+        <span class="label" id="resultCount"></span>
+      </div>
+      <div class="market-search">
+        <div class="mic-row" style="flex:1;">
+          <input type="text" id="searchInput" placeholder="Search crop — tomato, potato…">
+        </div>
+        <button class="urgent-toggle" id="urgentToggle">⚡ <span class="en">Sell-fast only</span><span class="ne">छिटो बिक्रीमात्र</span></button>
+      </div><div class="market-tools"><select id="priceSort"><option value="default">Sort: Recommended</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="nearby">Nearby / same district first</option></select></div>
+      <div class="chips" id="locationChips"></div>
+      <div class="listings" id="listingsContainer"></div>
+    </div>
+  </div>
+</section>
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+<section class="section" id="market-upgrade"><div class="wrap"><div class="section-head"><h2>Marketplace tools that actually work</h2><p>Search faster, save crops you like, and discover the best direct deals.</p></div><div class="upgrade-grid"><div class="upgrade-card"><h3>🔍 Smart crop discovery</h3><p>Use the search above, district chips, sell-fast mode and price sorting together.</p><div class="quick-tags"><button class="quick-tag" data-crop="Tomato">🍅 Tomato</button><button class="quick-tag" data-crop="Potato">🥔 Potato</button><button class="quick-tag" data-crop="Onion">🧅 Onion</button><button class="quick-tag" data-crop="Spinach">🥬 Spinach</button></div></div><div class="upgrade-card"><h3>❤️ My saved products <span id="savedCount">(0)</span></h3><p>Save interesting listings and keep them here during your visit.</p><div id="savedProducts" class="saved-list"><div class="empty-saved">No saved products yet. Tap the heart on any listing.</div></div></div></div></div></section>
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2><span class="en">Three steps, no office visit</span><span class="ne">तीन चरण, कार्यालय जानु पर्दैन</span></h2>
+      <p><span class="en">Built to work from a basic phone, in Nepali or English.</span><span class="ne">साधारण फोनबाट पनि चल्ने गरी बनाइएको, नेपाली वा अंग्रेजीमा।</span></p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="num">1</span><div><h3><span class="en">Farmer lists the harvest</span><span class="ne">किसानले उब्जनी सूचीमा राख्छन्</span></h3><p><span class="en">Crop, quantity, price, and village — takes under a minute, no photos required.</span><span class="ne">बाली, परिमाण, मूल्य र गाउँ — एक मिनेटभन्दा कम समयमा, फोटो चाहिँदैन।</span></p></div></div>
+      <div class="step"><span class="num">2</span><div><h3><span class="en">Buyer finds it nearby</span><span class="ne">खरीददारले नजिकैबाट भेट्टाउँछन्</span></h3><p><span class="en">Restaurants, hostels, and shops search by crop and district, then contact directly.</span><span class="ne">होटल, होस्टेल र पसलहरूले बाली र जिल्ला अनुसार खोजी सीधै सम्पर्क गर्छन्।</span></p></div></div>
+      <div class="step"><span class="num">3</span><div><h3><span class="en">Price is agreed directly</span><span class="ne">मूल्य सीधै तय हुन्छ</span></h3><p><span class="en">Both sides settle price and pickup between themselves — the platform never takes a cut.</span><span class="ne">दुबै पक्षले मूल्य र बुझाइ आफैं मिलाउँछन् — प्लेटफर्मले कुनै भाग लिँदैन।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="price">
+  <div class="wrap">
+    <div class="section-head">
+      <h2><span class="en">What direct selling actually earns</span><span class="ne">सीधै बेच्दा वास्तवमा कति कमाइ हुन्छ</span></h2>
+      <p><span class="en">Same tomato, three routes to market. Pick a crop above to see live numbers — this example uses tomato.</span><span class="ne">एउटै गोलभेडा, बजारसम्म पुग्ने तीन बाटो। माथिको उदाहरणमा गोलभेडाको अंक देखाइएको छ।</span></p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:640px;">
+      <div><div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;"><span><span class="en">Via middleman</span><span class="ne">बिचौलिया मार्फत</span></span><b>Rs. 40/kg</b></div><div style="height:14px;background:var(--paper-dim);border-radius:7px;overflow:hidden;"><div style="height:100%;width:44%;background:var(--soil);"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;"><span><span class="en">Direct on Taaja Bazar</span><span class="ne">ताजा बजारमा सीधै</span></span><b style="color:var(--forest-dark);">Rs. 55/kg</b></div><div style="height:14px;background:var(--paper-dim);border-radius:7px;overflow:hidden;"><div style="height:100%;width:61%;background:var(--forest);"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;"><span><span class="en">City market price (reference)</span><span class="ne">सहर बजार मूल्य (सन्दर्भ)</span></span><b>Rs. 72/kg</b></div><div style="height:14px;background:var(--paper-dim);border-radius:7px;overflow:hidden;"><div style="height:100%;width:100%;background:var(--mustard);"></div></div></div>
+      <div style="background:var(--forest-light);border-radius:8px;padding:12px 16px;font-size:0.92rem;color:var(--forest-dark);font-weight:600;margin-top:6px;"><span class="en">+ Rs. 15/kg extra for the farmer, for the same tomato</span><span class="ne">उही गोलभेडाको लागि किसानले थप रु. १५/के.जी. पाउँछन्</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="farmers">
+  <div class="wrap">
+    <div class="section-head"><h2><span class="en">Two doors, one marketplace</span><span class="ne">दुई ढोका, एउटै बजार</span></h2></div>
+    <div class="split">
+      <div class="split-panel farmers">
+        <h3><span class="en">If you grow it</span><span class="ne">यदि तपाईं किसान हुनुहुन्छ</span></h3>
+        <ul><li><span class="en">Set your own price — no one bargains it down for you</span><span class="ne">आफ्नो मूल्य आफैं राख्नुहोस् — कसैले घटाउँदैन</span></li><li><span class="en">Reach buyers in nearby towns, not just your village</span><span class="ne">आफ्नो गाउँमात्र होइन, नजिकैको सहरका खरीददारसम्म पुग्नुहोस्</span></li><li><span class="en">Your phone number stays private until you choose to share it</span><span class="ne">तपाईंले नचाहेसम्म फोन नम्बर गोप्य रहन्छ</span></li></ul>
+        <form id="listingForm">
+          <div class="form-grid"><div><label><span class="en">Crop</span><span class="ne">बाली</span></label><div class="mic-row"><input type="text" id="fCrop" placeholder="e.g. Tomato / गोलभेडा" required><button type="button" class="mic-btn" id="voiceBtn" title="Speak instead of typing">🎤</button></div></div><div><label><span class="en">Quantity (kg)</span><span class="ne">परिमाण (के.जी.)</span></label><input type="number" id="fQty" placeholder="200" required></div></div>
+          <div class="form-grid"><div><label><span class="en">Price per kg (Rs.)</span><span class="ne">प्रति के.जी. मूल्य (रु.)</span></label><input type="number" id="fPrice" placeholder="45" required></div><div><label><span class="en">District</span><span class="ne">जिल्ला</span></label><select id="fDistrict"><option>Kathmandu</option><option>Bhaktapur</option><option>Pokhara</option><option>Chitwan</option></select></div></div>
+          <div class="form-row"><label><span class="en">Your name</span><span class="ne">तपाईंको नाम</span></label><input type="text" id="fName" placeholder="e.g. Kamala Tamang" required></div>
+          <div class="form-row"><label><span class="en">Phone number (will be shown after contact)</span><span class="ne">फोन नम्बर (सम्पर्क पछि देखिने)</span></label><input type="tel" id="fPhone" placeholder="98XXXXXXXX" required></div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px;"><input type="checkbox" id="fUrgent" style="width:auto;"><span style="font-weight:500;color:var(--ink);font-size:0.88rem;"><span class="en">⚡ Harvested today — needs a quick buyer (Sell Fast)</span><span class="ne">⚡ आज टिपिएको — छिटो खरीददार चाहिन्छ</span></span></label>
+          <button type="submit" class="cta" style="width:100%;"><span class="en">Post listing</span><span class="ne">सूचीमा राख्नुहोस्</span></button>
+          <div class="toast" id="formToast"><span class="en">Listed. Buyers nearby can see this now.</span><span class="ne">सूचीमा राखियो। नजिकका खरीददारले अहिले नै देख्न सक्छन्।</span></div>
+        </form>
+      </div>
+      <div class="split-panel buyers" id="buyers">
+        <h3><span class="en">If you buy it</span><span class="ne">यदि तपाईं खरीददार हुनुहुन्छ</span></h3>
+        <ul><li><span class="en">See what's available today, straight from the field</span><span class="ne">आज खेतबाट सीधै के उपलब्ध छ हेर्नुहोस्</span></li><li><span class="en">Filter by crop, district, and quantity you need</span><span class="ne">बाली, जिल्ला र आवश्यक परिमाण अनुसार छान्नुहोस्</span></li><li><span class="en">Contact the farmer directly — arrange pickup or delivery yourselves</span><span class="ne">किसानलाई सीधै सम्पर्क गर्नुहोस् — बुझाइ आफैं मिलाउनुहोस्</span></li></ul>
+        <p style="color:var(--ink-soft);font-size:0.94rem;"><span class="en">Use the live listings panel at the top of the page to search today's harvest by crop or district — every contact button connects you straight to the farmer, no account needed.</span><span class="ne">पेजको माथिल्लो भागमा रहेको सूचीबाट बाली वा जिल्ला अनुसार आजको उब्जनी खोज्नुहोस् — कुनै पनि सम्पर्क बटनले सीधै किसानसम्म जोड्छ, खाता खोल्नु पर्दैन।</span></p>
+        <a href="#" class="cta ghost" onclick="document.querySelector('.market-panel').scrollIntoView({behavior:'smooth'});return false;" style="margin-top:10px;display:inline-block;"><span class="en">Jump to listings ↑</span><span class="ne">सूचीमा जानुहोस् ↑</span></a>
+        <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--line);"><h4 style="margin:0 0 10px;font-size:1rem;"><span class="en">Or post exactly what you need</span><span class="ne">वा तपाईंलाई चाहिएको सीधै पोस्ट गर्नुहोस्</span></h4>
+          <div class="form-grid"><input type="text" id="mCrop" placeholder="Crop e.g. Potato"><input type="number" id="mQty" placeholder="Quantity needed (kg)"></div>
+          <select id="mDistrict" style="margin-bottom:10px;"><option value="All">Any district</option><option>Kathmandu</option><option>Bhaktapur</option><option>Pokhara</option><option>Chitwan</option></select>
+          <button class="cta ghost" id="matchBtn" style="width:100%;margin-bottom:14px;"><span class="en">Find best matches</span><span class="ne">उत्तम मिलान खोज्नुहोस्</span></button>
+          <div id="matchResults"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><h2><span class="en">Why farmers can trust a listing</span><span class="ne">किन किसानले सूचीमा भरोसा गर्न सक्छन्</span></h2></div>
+    <div class="trust-grid">
+      <div class="trust-item"><h4><span class="en">Phone-verified accounts</span><span class="ne">फोन प्रमाणित खाता</span></h4><p><span class="en">Every farmer and buyer confirms a real phone number before listing or contacting anyone.</span><span class="ne">सूचीमा राख्नु वा सम्पर्क गर्नु अघि हरेक किसान र खरीददारले साँचो फोन नम्बर प्रमाणित गर्छन्।</span></p></div>
+      <div class="trust-item"><h4><span class="en">No upfront fees, ever</span><span class="ne">अग्रिम शुल्क कहिल्यै छैन</span></h4><p><span class="en">Listing is free. Nothing is deducted from the price you agree on with a buyer.</span><span class="ne">सूचीमा राख्नु निःशुल्क छ। खरीददारसँग तय गरेको मूल्यबाट केही कट्टी हुँदैन।</span></p></div>
+      <div class="trust-item"><h4><span class="en">Ward-level location shown</span><span class="ne">वडा तहको ठेगाना देखिन्छ</span></h4><p><span class="en">Buyers see exactly which village or ward the produce is coming from, before they call.</span><span class="ne">फोन गर्नु अघि नै खरीददारले उब्जनी कुन गाउँ वा वडाबाट आएको हो देख्छन्।</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="conditions">
+      <h2><span class="en">Built for how phones actually work here</span><span class="ne">यहाँको फोन जस्तो चल्छ त्यसैअनुसार बनाइएको</span></h2>
+      <p><span class="en">Most of rural Nepal isn't on fibre broadband, so the page is built to still be usable when the connection isn't.</span><span class="ne">ग्रामीण नेपालको धेरै भाग फाइबर ब्रोडब्यान्डमा छैन, त्यसैले नेटवर्क कमजोर हुँदा पनि पेज चल्ने गरी बनाइएको छ।</span></p>
+      <div class="cond-list"><div><h5><span class="en">No heavy photos</span><span class="ne">भारी फोटो छैन</span></h5><p><span class="en">Listings use simple icons instead of images, so the page loads fast on 2G/3G.</span><span class="ne">छिटो लोड हुनका लागि फोटोको सट्टा सरल आइकन प्रयोग गरिएको।</span></p></div><div><h5><span class="en">Nepali-first, not translated after</span><span class="ne">पहिले नेपाली, पछि अनुवाद होइन</span></h5><p><span class="en">Every screen is written directly in Nepali, not machine-translated from English.</span><span class="ne">हरेक पृष्ठ सीधै नेपालीमा लेखिएको, अंग्रेजीबाट मेसिन-अनुवाद होइन।</span></p></div><div><h5><span class="en">Works without an app</span><span class="ne">एप बिना पनि चल्छ</span></h5><p><span class="en">No download, no storage used on the phone — opens in any browser.</span><span class="ne">डाउनलोड चाहिँदैन, फोनमा ठाउँ ओगट्दैन — जुनसुकै ब्राउजरमा खुल्छ।</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="features"><div class="wrap"><div class="section-head"><h2>Built for a smarter farm-to-market journey</h2><p>More than listings — tools that make buying and selling easier.</p></div><div class="trust-grid"><div class="trust-item"><h4>📊 Price insights</h4><p>Compare direct prices with reference market prices before making a decision.</p></div><div class="trust-item"><h4>📍 Nearby matching</h4><p>Find buyers and harvests by district to reduce unnecessary travel.</p></div><div class="trust-item"><h4>🤝 Trusted community</h4><p>Verification badges and clear seller information help build confidence.</p></div></div></div></section>
+<section class="section"><div class="wrap"><div class="conditions"><h2>One marketplace. Better connections.</h2><p>Taaja Bazar is designed to give farmers more control and give bulk buyers a faster way to discover fresh produce.</p><div class="cond-list"><div><h5>For farmers</h5><p>Reach more buyers without depending only on middlemen.</p></div><div><h5>For buyers</h5><p>Discover available produce and connect directly with sellers.</p></div><div><h5>For communities</h5><p>Encourage local trade and reduce the distance between farms and kitchens.</p></div></div></div></div></section>
+<footer>
+  <div class="wrap foot-row">
+    <a href="#" class="logo" style="font-size:1.1rem;"><span class="mark"></span>Taaja<span style="color:var(--mustard-dark)">Bazar</span></a>
+    <p><span class="en">A direct line between the field and the kitchen.</span><span class="ne">खेतदेखि भान्छासम्मको सीधा बाटो।</span></p>
+  </div>
+</footer>
+
+<button class="a11y-fab" id="a11yFab" aria-label="Accessibility tools">
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="white"><circle cx="12" cy="4" r="2.2"/><path d="M4 8.5l7 1.2v2l-3.5.6L6 20h2.2l1.8-6 2 1v5h2v-5l2-1 1.8 6H20l-1.5-7.7-3.5-.6v-2l7-1.2-.4-2L12 7.8 4.4 6.5z"/></svg>
+</button>
+<div class="a11y-panel" id="a11yPanel">
+  <div class="a11y-head"><span><span class="en">Accessibility Tools</span><span class="ne">पहुँच उपकरण</span></span><div><button id="a11yReset" title="Reset">⟳</button><button id="a11yClose" title="Close">✕</button></div></div>
+  <div class="a11y-grid">
+    <button class="a11y-card" data-action="textSize"><span class="a11y-icon">TT</span><span><span class="en">Text Size</span><span class="ne">अक्षर साइज</span></span></button>
+    <button class="a11y-card" data-action="contrast"><span class="a11y-icon">◐</span><span><span class="en">High Contrast</span><span class="ne">उच्च कन्ट्रास्ट</span></span></button>
+    <button class="a11y-card" data-action="textAlign"><span class="a11y-icon">≡</span><span><span class="en">Text Align</span><span class="ne">पंक्तिबद्ध</span></span></button>
+    <button class="a11y-card" data-action="colorFilter"><span class="a11y-icon">◑</span><span><span class="en">Color Filter</span><span class="ne">रंग फिल्टर</span></span></button>
+    <button class="a11y-card" data-action="textSpacing"><span class="a11y-icon">A↔</span><span><span class="en">Text Spacing</span><span class="ne">अक्षर स्पेसिङ</span></span></button>
+    <button class="a11y-card" data-action="lineHeight"><span class="a11y-icon">⇕</span><span><span class="en">Line Height</span><span class="ne">लाइन उचाइ</span></span></button>
+    <button class="a11y-card" data-action="fontSelect"><span class="a11y-icon">Aa</span><span><span class="en">Font Selection</span><span class="ne">फन्ट छनोट</span></span></button>
+    <button class="a11y-card" data-action="saturation"><span class="a11y-icon">◍</span><span><span class="en">Saturation</span><span class="ne">स्याचुरेसन</span></span></button>
+    <button class="a11y-card" data-action="dyslexia"><span class="a11y-icon">Df</span><span><span class="en">Dyslexia Friendly</span><span class="ne">डिस्लेक्सिया-मैत्री</span></span></button>
+    <button class="a11y-card" data-action="cursor"><span class="a11y-icon">➤</span><span><span class="en">Bigger Cursor</span><span class="ne">ठूलो कर्सर</span></span></button>
+    <button class="a11y-card" data-action="hideImages"><span class="a11y-icon">👁</span><span><span class="en">Hide Images</span><span class="ne">फोटो लुकाउनुहोस्</span></span></button>
+    <button class="a11y-card" data-action="pauseAnim"><span class="a11y-icon">⏸</span><span><span class="en">Pause Animations</span><span class="ne">एनिमेसन रोक्नुहोस्</span></span></button>
+  </div>
+</div>
+
+<script>
+  // language toggle
+  function refreshLangButtons(){
+    const isNe = document.body.classList.contains('lang-ne');
+    document.querySelectorAll('.lang-toggle-btn').forEach(b => b.textContent = isNe ? 'English' : 'नेपाली');
+  }
+  document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => { document.body.classList.toggle('lang-ne'); refreshLangButtons(); });
+  });
+
+  // low-data toggle
+  function refreshLiteButtons(){
+    const isLite = document.body.classList.contains('low-data');
+    document.querySelectorAll('.lite-toggle-btn').forEach(b => {
+      b.querySelector('.en').textContent = isLite ? 'Normal' : 'Lite';
+      b.querySelector('.ne').textContent = isLite ? 'सामान्य' : 'लाइट';
+      b.firstChild.textContent = isLite ? '🔵 ' : '🟢 ';
+    });
+  }
+  document.querySelectorAll('.lite-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => { document.body.classList.toggle('low-data'); refreshLiteButtons(); });
+  });
+
+  // mobile menu
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburgerBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+  // icons
+  const icons = {
+    Tomato: {bg:'#f3d7cf', svg:'<circle cx="12" cy="13" r="8" fill="#c0392b"/><path d="M9 6c1-2 5-2 6 0" stroke="#3a7a3f" stroke-width="2" fill="none" stroke-linecap="round"/>'},
+    Potato: {bg:'#e9dcc3', svg:'<ellipse cx="12" cy="12" rx="9" ry="7" fill="#a97b4f"/>'},
+    Cauliflower: {bg:'#eef1e3', svg:'<circle cx="12" cy="10" r="7" fill="#f2f2e6"/><rect x="9" y="15" width="6" height="5" fill="#5a8a4a"/>'},
+    Cabbage: {bg:'#e3ecdd', svg:'<circle cx="12" cy="12" r="8" fill="#7fae5e"/><circle cx="12" cy="12" r="4" fill="#a7c98a"/>'},
+    Maize: {bg:'#faf0cf', svg:'<rect x="8" y="4" width="8" height="16" rx="4" fill="#e3c04a"/>'},
+    Spinach: {bg:'#e2ede0', svg:'<path d="M12 4c5 2 6 9 0 16C6 13 7 6 12 4z" fill="#3f7a3a"/>'},
+    Cucumber: {bg:'#e6efdf', svg:'<rect x="5" y="10" width="14" height="5" rx="2.5" fill="#5c8f3f"/>'},
+    Onion: {bg:'#f2e6df', svg:'<circle cx="12" cy="13" r="7" fill="#b96b8c"/><path d="M12 6v-2" stroke="#8a8a4a" stroke-width="2"/>'}
+  };
+  function iconFor(crop){
+    const key = Object.keys(icons).find(k => crop.toLowerCase().includes(k.toLowerCase()));
+    return icons[key] || {bg:'#e6e2d4', svg:'<circle cx="12" cy="12" r="8" fill="#6b4226"/>'};
+  }
+
+  // listings with real phone numbers
+  let listings = [
+    {crop:'Tomato', cropNe:'गोलभेडा', qty:220, price:48, marketPrice:72, district:'Kathmandu', districtNe:'काठमाडौं', name:'Kamala Tamang', ward:'Ward 5, Lele', rating:4.8, orders:34, verified:true, urgent:false, phone:'9841234567'},
+    {crop:'Cauliflower', cropNe:'काउली', qty:150, price:35, marketPrice:55, district:'Bhaktapur', districtNe:'भक्तपुर', name:'Ram Bahadur Shrestha', ward:'Ward 2, Sudal', rating:4.5, orders:21, verified:true, urgent:true, phone:'9852345678'},
+    {crop:'Potato', cropNe:'आलु', qty:400, price:52, marketPrice:68, district:'Chitwan', districtNe:'चितवन', name:'Sita Kumari Chaudhary', ward:'Ward 9, Bharatpur', rating:4.9, orders:56, verified:true, urgent:false, phone:'9863456789'},
+    {crop:'Cabbage', cropNe:'बन्दा', qty:180, price:30, marketPrice:48, district:'Kathmandu', districtNe:'काठमाडौं', name:'Hari Prasad Adhikari', ward:'Ward 3, Chapagaun', rating:4.2, orders:12, verified:false, urgent:false, phone:'9874567890'},
+    {crop:'Maize', cropNe:'मकै', qty:600, price:38, marketPrice:50, district:'Pokhara', districtNe:'पोखरा', name:'Devi Gurung', ward:'Ward 11, Lekhnath', rating:4.6, orders:18, verified:true, urgent:false, phone:'9885678901'},
+    {crop:'Spinach', cropNe:'पालुंगो', qty:90, price:60, marketPrice:85, district:'Bhaktapur', districtNe:'भक्तपुर', name:'Krishna Maya Dangol', ward:'Ward 6, Suryabinayak', rating:4.3, orders:9, verified:false, urgent:true, phone:'9896789012'},
+    {crop:'Cucumber', cropNe:'काँक्रो', qty:130, price:42, marketPrice:58, district:'Chitwan', districtNe:'चितवन', name:'Bishnu Poudel', ward:'Ward 4, Ratnanagar', rating:4.7, orders:27, verified:true, urgent:false, phone:'9807890123'},
+    {crop:'Onion', cropNe:'प्याज', qty:250, price:65, marketPrice:90, district:'Pokhara', districtNe:'पोखरा', name:'Laxmi Thapa', ward:'Ward 8, Pokhara', rating:4.4, orders:15, verified:true, urgent:false, phone:'9818901234'}
+  ];
+
+  let activeDistrict = 'All';
+  let urgentOnly = false;
+  const districts = ['All','Kathmandu','Bhaktapur','Pokhara','Chitwan'];
+  const districtsNe = {All:'सबै', Kathmandu:'काठमाडौं', Bhaktapur:'भक्तपुर', Pokhara:'पोखरा', Chitwan:'चितवन'};
+
+  function renderChips(){
+    const container = document.getElementById('locationChips');
+    container.innerHTML = '';
+    districts.forEach(d => {
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (d === activeDistrict ? ' active' : '');
+      chip.innerHTML = `<span class="en">${d}</span><span class="ne">${districtsNe[d]}</span>`;
+      chip.addEventListener('click', () => { activeDistrict = d; renderChips(); renderListings(); });
+      container.appendChild(chip);
+    });
+  }
+
+  let savedProducts = JSON.parse(localStorage.getItem('tb_saved_products') || '[]');
+  function renderSavedProducts(){ const box=document.getElementById('savedProducts'); const saved=listings.filter(l=>savedProducts.includes(l.phone)); document.getElementById('savedCount').textContent='('+saved.length+')'; box.innerHTML=saved.length?saved.map(l=>`<div class="saved-item"><span><b>${l.crop}</b><br><small>${l.district} · Rs. ${l.price}/kg</small></span><button class="save-btn saved" data-remove="${l.phone}">♥</button></div>`).join(''):'<div class="empty-saved">No saved products yet. Tap the heart on any listing.</div>'; box.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{savedProducts=savedProducts.filter(x=>x!==b.dataset.remove);localStorage.setItem('tb_saved_products',JSON.stringify(savedProducts));renderListings();renderSavedProducts();}); }
+  function renderListings(){
+    const container = document.getElementById('listingsContainer');
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    let filtered = listings.filter(l => {
+      const matchesDistrict = activeDistrict === 'All' || l.district === activeDistrict;
+      const matchesQuery = !query || l.crop.toLowerCase().includes(query) || l.cropNe.includes(query);
+      const matchesUrgent = !urgentOnly || l.urgent;
+      return matchesDistrict && matchesQuery && matchesUrgent;
+    });
+    const sort = document.getElementById('priceSort')?.value || 'default'; if(sort==='low') filtered.sort((a,b)=>Number(a.price)-Number(b.price)); if(sort==='high') filtered.sort((a,b)=>Number(b.price)-Number(a.price)); if(sort==='nearby' && activeDistrict!=='All') filtered.sort((a,b)=>(b.district===activeDistrict)-(a.district===activeDistrict));
+    document.getElementById('resultCount').textContent = filtered.length + ' listed';
+    container.innerHTML = '';
+    if(filtered.length === 0){
+      container.innerHTML = `<div class="empty-note"><span class="en">No listings match yet. Try a different crop or district.</span><span class="ne">कुनै सूची भेटिएन। फरक बाली वा जिल्ला प्रयास गर्नुहोस्।</span></div>`;
+      return;
+    }
+    filtered.forEach((l, i) => {
+      const icon = iconFor(l.crop);
+      const row = document.createElement('div');
+      row.className = 'listing' + (l.urgent ? ' urgent' : '');
+      row.innerHTML = `
+        <div class="crop-icon" style="background:${icon.bg}"><svg viewBox="0 0 24 24">${icon.svg}</svg></div>
+        <div class="listing-body">
+          <div class="top"><span class="crop-name"><span class="en">${l.crop}</span><span class="ne">${l.cropNe}</span></span><span class="price">Rs. ${l.price}<span style="font-weight:400;color:var(--ink-soft);">/kg</span></span></div>
+          <div class="meta"><span class="en">${l.qty}kg available · ${l.ward}, ${l.district}</span><span class="ne">${l.qty} के.जी. उपलब्ध · ${l.ward}, ${l.districtNe}</span></div>
+          <div class="badge-row">${l.urgent ? `<span class="badge rescue">⚡ <span class="en">Sell fast</span><span class="ne">छिटो बिक्री</span></span>` : ''}${l.verified ? `<span class="badge verified">✓ <span class="en">Verified</span><span class="ne">प्रमाणित</span></span>` : ''}<span class="badge rating">★ ${l.rating} · ${l.orders} <span class="en">orders</span><span class="ne">अर्डर</span></span></div>
+        </div>
+        <button class="save-btn ${savedProducts.includes(l.phone) ? 'saved' : ''}" data-save="${l.phone}" title="Save product">${savedProducts.includes(l.phone) ? '♥' : '♡'}</button><button class="contact-btn" data-idx="${i}"><span class="en">Contact</span><span class="ne">सम्पर्क</span></button>
+      `;
+      container.appendChild(row);
+    });
+    container.querySelectorAll('.contact-btn').forEach(btn => {
+      btn.addEventListener('click', function(){
+        const idx = this.dataset.idx;
+        const l = filtered[idx];
+        this.classList.add('revealed');
+        this.innerHTML = `<span class="en">📞 ${l.phone}</span><span class="ne">📞 ${l.phone}</span>`;
+      });
+    });
+    container.querySelectorAll('.save-btn').forEach(btn => btn.addEventListener('click', function(){ const id=this.dataset.save; savedProducts = savedProducts.includes(id) ? savedProducts.filter(x=>x!==id) : [...savedProducts,id]; localStorage.setItem('tb_saved_products', JSON.stringify(savedProducts)); renderListings(); renderSavedProducts(); }));
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderListings);
+  document.getElementById('priceSort')?.addEventListener('change', renderListings);
+  document.querySelectorAll('.quick-tag').forEach(b=>b.addEventListener('click',()=>{document.getElementById('searchInput').value=b.dataset.crop; document.getElementById('market-panel')?.scrollIntoView({behavior:'smooth'}); renderListings();}));
+  const urgentBtn = document.getElementById('urgentToggle');
+  urgentBtn.addEventListener('click', () => {
+    urgentOnly = !urgentOnly;
+    urgentBtn.classList.toggle('active', urgentOnly);
+    renderListings();
+  });
+
+<<<<<<< HEAD
+  // The hero illustration stays optional so the marketplace remains usable without WebGL.
+  function initializeTaajaScene(){
+    const canvas = document.getElementById('heroCanvas');
+    const hero = document.querySelector('.hero');
+    if(!canvas || !hero || !window.THREE || canvas.dataset.initialized || document.body.classList.contains('low-data')) return;
+    canvas.dataset.initialized = 'true';
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:window.devicePixelRatio < 2, powerPreference:'low-power'});
+    } catch(error) {
+      canvas.dataset.initialized = '';
+      console.error('The Taaja Bazar 3D showcase could not initialize WebGL.', error);
+      return;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+    if('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+    else renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.toneMappingExposure = 1;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60);
+    camera.position.set(0, 0, 11);
+
+    scene.add(new THREE.HemisphereLight(0xdfffe1, 0x182118, .48));
+    const keyLight = new THREE.DirectionalLight(0xfff5df, 1.15);
+    keyLight.position.set(-4, 6, 8);
+    scene.add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0xc9ffbd, .55);
+    fillLight.position.set(5, 0, 5);
+    scene.add(fillLight);
+    const greenLight = new THREE.PointLight(0x20ff30, 2.4, 12, 2);
+    greenLight.position.set(2.4, .4, 3);
+    scene.add(greenLight);
+
+    const showcase = new THREE.Group();
+    scene.add(showcase);
+    const floatingItems = [];
+    const clock = new THREE.Clock();
+    const pointer = new THREE.Vector2();
+    const pointerTarget = new THREE.Vector2();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let inView = true;
+    let animationFrame = 0;
+
+    function material(color, roughness){
+      return new THREE.MeshStandardMaterial({color, roughness, metalness:0});
+    }
+
+    function floatItem(group, position, size, phase, speed){
+      group.position.set(position[0], position[1], position[2]);
+      group.scale.setScalar(size);
+      showcase.add(group);
+      floatingItems.push({group, baseY:position[1], phase, speed});
+    }
+
+    function makeTomato(){
+      const group = new THREE.Group();
+      const geometry = new THREE.SphereGeometry(1, 48, 36);
+      const positions = geometry.attributes.position;
+      const vertex = new THREE.Vector3();
+      for(let i = 0; i < positions.count; i++){
+        vertex.fromBufferAttribute(positions, i);
+        const crown = Math.exp(-Math.pow((vertex.y - .92) / .2, 2));
+        const lobes = Math.sin(Math.atan2(vertex.z, vertex.x) * 5 + .35);
+        const radius = 1 - .12 * crown + .025 * lobes * crown;
+        positions.setXYZ(i, vertex.x * radius, vertex.y * radius, vertex.z * radius);
+      }
+      geometry.computeVertexNormals();
+      const fruit = new THREE.Mesh(geometry, material(0xd92820, .52));
+      fruit.scale.set(1, .9, 1);
+      group.add(fruit);
+
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(.035, .055, .23, 8), material(0x396b32, .52));
+      stem.position.y = .89;
+      group.add(stem);
+      for(let i = 0; i < 5; i++){
+        const angle = i * Math.PI * 2 / 5 + .25;
+        const leaf = new THREE.Mesh(new THREE.ConeGeometry(.115, .37, 5), material(i % 2 ? 0x32743a : 0x4a8f3d, .43));
+        leaf.position.set(Math.sin(angle) * .11, .86, Math.cos(angle) * .11);
+        leaf.rotation.z = Math.cos(angle) * -.5;
+        leaf.rotation.x = Math.sin(angle) * .5;
+        group.add(leaf);
+      }
+      return group;
+    }
+
+    function makeCabbage(){
+      const group = new THREE.Group();
+      const geometry = new THREE.SphereGeometry(.84, 64, 48);
+      const vertices = geometry.attributes.position;
+      const vertex = new THREE.Vector3();
+      for(let i = 0; i < vertices.count; i++){
+        vertex.fromBufferAttribute(vertices, i);
+        const angle = Math.atan2(vertex.z, vertex.x);
+        const ripple = (Math.sin(angle * 8 + .35) * .018 + Math.sin(angle * 5) * .01) * (1 - Math.abs(vertex.y) * .45);
+        const radius = 1 + ripple;
+        vertices.setXYZ(i, vertex.x * radius, vertex.y * radius * .9, vertex.z * radius);
+      }
+      geometry.computeVertexNormals();
+      group.add(new THREE.Mesh(geometry, material(0x4c9142, .78)));
+
+      const veinMaterial = new THREE.LineBasicMaterial({color:0xb8d79b, transparent:true, opacity:.42});
+      for(let vein = -3; vein <= 3; vein++){
+        const points = [];
+        for(let step = 0; step <= 16; step++){
+          const progress = step / 16;
+          const y = .68 - progress * 1.27;
+          const x = vein * .18 * Math.sin(progress * Math.PI * .83);
+          const z = Math.sqrt(Math.max(.05, 1 - x * x - y * y)) * .842;
+          points.push(new THREE.Vector3(x, y * .9, z));
+        }
+        const curve = new THREE.CatmullRomCurve3(points);
+        const veinGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(24));
+        group.add(new THREE.Line(veinGeometry, veinMaterial));
+      }
+      return group;
+    }
+
+    function makeCorn(){
+      const group = new THREE.Group();
+      const cob = new THREE.Mesh(new THREE.CylinderGeometry(.25, .31, 1.55, 24, 1), material(0xe8a828, .48));
+      cob.position.y = .02;
+      group.add(cob);
+      const kernelColors = [0xffd13f, 0xe6a51a, 0xffe56c];
+      const kernelGeometry = new THREE.SphereGeometry(.105, 10, 8);
+      for(let row = 0; row < 7; row++){
+        const y = -.61 + row * .205;
+        for(let column = 0; column < 8; column++){
+          const angle = column * Math.PI * 2 / 8 + row * .39;
+          const radius = .286 - Math.abs(y) * .026;
+          const kernel = new THREE.Mesh(kernelGeometry, material(kernelColors[(row + column) % kernelColors.length], .36));
+          kernel.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+          kernel.scale.set(.9, .92, .92);
+          group.add(kernel);
+        }
+      }
+      for(let i = 0; i < 3; i++){
+        const husk = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 14), material(i === 1 ? 0x74a94a : 0x4d843a, .52));
+        husk.scale.set(.12, .87, .2);
+        husk.position.set((i - 1) * .21, -.18, .16);
+        husk.rotation.z = (i - 1) * -.34;
+        group.add(husk);
+      }
+      return group;
+    }
+
+    function makeCarrot(){
+      const group = new THREE.Group();
+      const carrotPoints = [
+        new THREE.Vector2(.015, -.98), new THREE.Vector2(.11, -.78),
+        new THREE.Vector2(.22, -.35), new THREE.Vector2(.34, .18),
+        new THREE.Vector2(.36, .57), new THREE.Vector2(.25, .82),
+        new THREE.Vector2(.07, .93), new THREE.Vector2(0, .95)
+      ];
+      const body = new THREE.Mesh(new THREE.LatheGeometry(carrotPoints, 32), material(0xee7015, .52));
+      group.add(body);
+      for(let i = 0; i < 4; i++){
+        const angle = i * Math.PI * .5 + .25;
+        const leaf = new THREE.Mesh(new THREE.ConeGeometry(.1, .76 + (i % 2) * .19, 5), material(i % 2 ? 0x4f9846 : 0x75ae4a, .49));
+        leaf.position.set(Math.cos(angle) * .09, 1.1 + (i % 2) * .04, Math.sin(angle) * .09);
+        leaf.rotation.z = Math.cos(angle) * .52;
+        leaf.rotation.x = Math.sin(angle) * .52;
+        group.add(leaf);
+      }
+      return group;
+    }
+
+    floatItem(makeTomato(), [-1.12, .72, .35], .8, .2, .65);
+    floatItem(makeCabbage(), [.35, .97, -.35], .79, 1.5, .47);
+    floatItem(makeCorn(), [1.73, -.48, .2], .83, 2.7, .54);
+    floatItem(makeCarrot(), [-.4, -1.12, .8], .79, 4.1, .58);
+
+    const orbitGroup = new THREE.Group();
+    orbitGroup.position.set(.2, .04, -1.05);
+    showcase.add(orbitGroup);
+    const orbitMaterial = new THREE.MeshBasicMaterial({color:0x65ff68, transparent:true, opacity:.48});
+    const orbitSoftMaterial = new THREE.MeshBasicMaterial({color:0xc9e7bd, transparent:true, opacity:.24});
+    const orbitOne = new THREE.Mesh(new THREE.TorusGeometry(1.95, .008, 5, 180), orbitMaterial);
+    orbitOne.scale.set(1.22, .76, 1);
+    orbitOne.rotation.set(.98, .16, -.2);
+    orbitGroup.add(orbitOne);
+    const orbitTwo = new THREE.Mesh(new THREE.TorusGeometry(1.42, .006, 5, 160), orbitSoftMaterial);
+    orbitTwo.scale.set(1.48, .78, 1);
+    orbitTwo.rotation.set(.48, -.35, .48);
+    orbitGroup.add(orbitTwo);
+    const satellites = [];
+    for(let i = 0; i < 3; i++){
+      const satellite = new THREE.Mesh(new THREE.SphereGeometry(i === 0 ? .043 : .026, 12, 10), new THREE.MeshBasicMaterial({color:i === 0 ? 0x00ff00 : 0xcaffc4}));
+      orbitGroup.add(satellite);
+      satellites.push({mesh:satellite, phase:i * Math.PI * 2 / 3});
+    }
+
+    let seed = 41;
+    function random(){ seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+    const stars = new Float32Array(180 * 3);
+    for(let i = 0; i < 180; i++){
+      stars[i * 3] = random() * 9.5 - 2.2;
+      stars[i * 3 + 1] = random() * 5.4 - 2.7;
+      stars[i * 3 + 2] = -2.5 - random() * 4;
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(stars, 3));
+    const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({color:0x9bd59a, size:.022, transparent:true, opacity:.48, sizeAttenuation:true}));
+    scene.add(starField);
+
+    function resizeScene(){
+      const width = Math.max(1, canvas.clientWidth);
+      const height = Math.max(1, canvas.clientHeight);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+      const compact = width < 720;
+      showcase.position.set(compact ? 1.5 : 2.25, compact ? .25 : .08, 0);
+      showcase.scale.setScalar(compact ? .72 : .82);
+      renderer.render(scene, camera);
+    }
+
+    function animate(){
+      animationFrame = 0;
+      if(!inView || document.hidden || document.body.classList.contains('low-data')) return;
+      const time = clock.getElapsedTime();
+      pointer.lerp(pointerTarget, .035);
+      showcase.rotation.y = Math.sin(time * .16) * .075 + pointer.x * .09;
+      showcase.rotation.x = Math.cos(time * .13) * .035 + pointer.y * .05;
+      orbitGroup.rotation.z = Math.sin(time * .1) * .055;
+      floatingItems.forEach(item => {
+        item.group.position.y = item.baseY + Math.sin(time * item.speed + item.phase) * .13;
+        item.group.rotation.y = Math.sin(time * .23 + item.phase) * .18;
+        item.group.rotation.x = Math.cos(time * .19 + item.phase) * .055;
+      });
+      satellites.forEach(item => {
+        const angle = time * .24 + item.phase;
+        item.mesh.position.set(Math.cos(angle) * 2.27, Math.sin(angle) * .94, Math.sin(angle * .65) * .4);
+      });
+      starField.rotation.y = time * .008;
+      renderer.render(scene, camera);
+      animationFrame = requestAnimationFrame(animate);
+    }
+
+    function resumeScene(){
+      if(reducedMotion.matches || document.body.classList.contains('low-data') || document.hidden || !inView){
+        if(animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+        renderer.render(scene, camera);
+        return;
+      }
+      if(!animationFrame) animationFrame = requestAnimationFrame(animate);
+    }
+
+    const resizeObserver = new ResizeObserver(resizeScene);
+    resizeObserver.observe(canvas);
+    const intersectionObserver = new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting;
+      resumeScene();
+    });
+    intersectionObserver.observe(hero);
+    hero.addEventListener('pointermove', event => {
+      if(event.pointerType !== 'mouse') return;
+      const bounds = hero.getBoundingClientRect();
+      pointerTarget.set(((event.clientX - bounds.left) / bounds.width - .5) * 2, ((event.clientY - bounds.top) / bounds.height - .5) * -2);
+    });
+    hero.addEventListener('pointerleave', () => pointerTarget.set(0, 0));
+    document.addEventListener('visibilitychange', resumeScene);
+    document.addEventListener('taaja-scene-visibility-change', resumeScene);
+    reducedMotion.addEventListener('change', resumeScene);
+
+    resizeScene();
+    document.body.classList.add('scene-ready');
+    resumeScene();
+  }
+
+  const networkConnection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const reducedBandwidth = networkConnection && (networkConnection.saveData || /^(slow-)?2g$/.test(networkConnection.effectiveType));
+  if(!reducedBandwidth && !document.body.classList.contains('low-data')){
+    const threeScript = document.createElement('script');
+    threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js';
+    threeScript.async = true;
+    threeScript.crossOrigin = 'anonymous';
+    threeScript.addEventListener('load', initializeTaajaScene, {once:true});
+    threeScript.addEventListener('error', () => console.error('Three.js could not be loaded; the static hero background remains available.'), {once:true});
+    document.head.appendChild(threeScript);
+  }
+  if(window.THREE) initializeTaajaScene();
+  document.addEventListener('taaja-scene-visibility-change', () => {
+    if(window.THREE && !document.body.classList.contains('low-data')) initializeTaajaScene();
+  });
+  document.querySelectorAll('.lite-toggle-btn').forEach(button => button.addEventListener('click', () => document.dispatchEvent(new Event('taaja-scene-visibility-change'))));
+
+=======
+>>>>>>> f92967b0acb2a2c07ed768d5a864253b121b88f9
+  // A11Y
+  const a11yState = { textSizeStep:0, contrast:false, justify:false, colorFilterMode:0, spacing:false, lineHeight:false, fontMode:0, saturationOff:false, dyslexia:false, bigCursor:false, hideImages:false, pauseAnim:false };
+  function updateA11yFilters(){
+    const parts = [];
+    if(a11yState.contrast) parts.push('invert(1) hue-rotate(180deg)');
+    const cf = ['', 'grayscale(1)', 'sepia(0.7)', 'invert(1)'];
+    if(cf[a11yState.colorFilterMode]) parts.push(cf[a11yState.colorFilterMode]);
+    if(a11yState.saturationOff) parts.push('saturate(0)');
+    document.body.style.filter = parts.join(' ') || 'none';
+  }
+  const a11yFab = document.getElementById('a11yFab');
+  const a11yPanel = document.getElementById('a11yPanel');
+  a11yFab.addEventListener('click', () => a11yPanel.classList.toggle('open'));
+  document.getElementById('a11yClose').addEventListener('click', () => a11yPanel.classList.remove('open'));
+
+  document.querySelectorAll('.a11y-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const action = card.dataset.action;
+      if(action === 'textSize'){
+        a11yState.textSizeStep = (a11yState.textSizeStep + 1) % 4;
+        document.documentElement.style.fontSize = [100,112,124,136][a11yState.textSizeStep] + '%';
+        card.classList.toggle('active', a11yState.textSizeStep > 0);
+      } else if(action === 'contrast'){ a11yState.contrast = !a11yState.contrast; updateA11yFilters(); card.classList.toggle('active', a11yState.contrast); }
+      else if(action === 'textAlign'){ a11yState.justify = !a11yState.justify; document.body.classList.toggle('a11y-justify', a11yState.justify); card.classList.toggle('active', a11yState.justify); }
+      else if(action === 'colorFilter'){ a11yState.colorFilterMode = (a11yState.colorFilterMode + 1) % 4; updateA11yFilters(); card.classList.toggle('active', a11yState.colorFilterMode > 0); }
+      else if(action === 'textSpacing'){ a11yState.spacing = !a11yState.spacing; document.body.classList.toggle('a11y-spacing', a11yState.spacing); card.classList.toggle('active', a11yState.spacing); }
+      else if(action === 'lineHeight'){ a11yState.lineHeight = !a11yState.lineHeight; document.body.classList.toggle('a11y-lh', a11yState.lineHeight); card.classList.toggle('active', a11yState.lineHeight); }
+      else if(action === 'fontSelect'){ a11yState.fontMode = (a11yState.fontMode + 1) % 3; document.body.style.fontFamily = ['', "'Verdana','Segoe UI',sans-serif", "'Georgia','Times New Roman',serif"][a11yState.fontMode]; card.classList.toggle('active', a11yState.fontMode > 0); }
+      else if(action === 'saturation'){ a11yState.saturationOff = !a11yState.saturationOff; updateA11yFilters(); card.classList.toggle('active', a11yState.saturationOff); }
+      else if(action === 'dyslexia'){ a11yState.dyslexia = !a11yState.dyslexia; document.body.classList.toggle('a11y-dyslexia', a11yState.dyslexia); card.classList.toggle('active', a11yState.dyslexia); }
+      else if(action === 'cursor'){ a11yState.bigCursor = !a11yState.bigCursor; document.body.classList.toggle('a11y-cursor', a11yState.bigCursor); card.classList.toggle('active', a11yState.bigCursor); }
+      else if(action === 'hideImages'){ a11yState.hideImages = !a11yState.hideImages; document.body.classList.toggle('a11y-hide-images', a11yState.hideImages); card.classList.toggle('active', a11yState.hideImages); }
+      else if(action === 'pauseAnim'){ a11yState.pauseAnim = !a11yState.pauseAnim; document.body.classList.toggle('a11y-pause', a11yState.pauseAnim); card.classList.toggle('active', a11yState.pauseAnim); }
+    });
+  });
+  document.getElementById('a11yReset').addEventListener('click', () => {
+    Object.assign(a11yState, {textSizeStep:0, contrast:false, justify:false, colorFilterMode:0, spacing:false, lineHeight:false, fontMode:0, saturationOff:false, dyslexia:false, bigCursor:false, hideImages:false, pauseAnim:false});
+    document.documentElement.style.fontSize = ''; document.body.style.filter = 'none'; document.body.style.fontFamily = '';
+    ['a11y-justify','a11y-spacing','a11y-lh','a11y-dyslexia','a11y-cursor','a11y-hide-images','a11y-pause'].forEach(c => document.body.classList.remove(c));
+    document.querySelectorAll('.a11y-card.active').forEach(c => c.classList.remove('active'));
+  });
+
+  // match buyer
+  document.getElementById('matchBtn').addEventListener('click', () => {
+    const crop = document.getElementById('mCrop').value.trim().toLowerCase();
+    const qtyNeeded = parseInt(document.getElementById('mQty').value) || 0;
+    const district = document.getElementById('mDistrict').value;
+    let candidates = listings.filter(l => !crop || l.crop.toLowerCase().includes(crop));
+    candidates = candidates.map(l => {
+      let score = 0; if(district === 'All' || l.district === district) score += 50; if(l.qty >= qtyNeeded) score += 30; score += (100 - l.price) * 0.2; if(l.urgent) score += 10; return {...l, score};
+    }).sort((a,b) => b.score - a.score).slice(0,3);
+    const box = document.getElementById('matchResults');
+    if(candidates.length === 0){ box.innerHTML = `<p style="font-size:0.88rem;color:var(--ink-soft);"><span class="en">No matches yet — try a different crop.</span><span class="ne">कुनै मिलान भेटिएन — फरक बाली प्रयास गर्नुहोस्।</span></p>`; return; }
+    box.innerHTML = candidates.map(l => `<div class="listing" style="margin-bottom:8px;"><div class="crop-icon" style="background:${iconFor(l.crop).bg}"><svg viewBox="0 0 24 24">${iconFor(l.crop).svg}</svg></div><div class="listing-body"><div class="top"><span class="crop-name">${l.crop} · ${l.ward}, ${l.district}</span><span class="price">Rs. ${l.price}/kg</span></div><div class="meta">${l.qty}kg available · ★${l.rating}${l.urgent ? ' · ⚡ sell fast' : ''}</div></div></div>`).join('');
+  });
+
+  // voice
+  const voiceBtn = document.getElementById('voiceBtn');
+  voiceBtn.addEventListener('click', () => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!Recognition){ alert(document.body.classList.contains('lang-ne') ? 'यो ब्राउजरमा आवाज पहिचान उपलब्ध छैन। कृपया टाइप गर्नुहोस्।' : 'Voice input isn\'t supported in this browser. Please type instead.'); return; }
+    const rec = new Recognition(); rec.lang = document.body.classList.contains('lang-ne') ? 'ne-NP' : 'en-US';
+    voiceBtn.textContent = '🔴'; rec.start();
+    rec.onresult = (e) => { const transcript = e.results[0][0].transcript; document.getElementById('fCrop').value = transcript; const qtyMatch = transcript.match(/(\d+)\s*(kg|के\.?जी\.?)/i); const priceMatch = transcript.match(/(rs\.?|रु\.?|rupees?)\s*(\d+)/i) || transcript.match(/(\d+)\s*(rupees?|rs\.?|रु\.?)/i); if(qtyMatch) document.getElementById('fQty').value = qtyMatch[1]; if(priceMatch) document.getElementById('fPrice').value = priceMatch[2] || priceMatch[1]; };
+    rec.onend = () => { voiceBtn.textContent = '🎤'; }; rec.onerror = () => { voiceBtn.textContent = '🎤'; };
+  });
+
+  // add listing form
+  document.getElementById('listingForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const crop = document.getElementById('fCrop').value.trim();
+    const qty = document.getElementById('fQty').value;
+    const price = document.getElementById('fPrice').value;
+    const district = document.getElementById('fDistrict').value;
+    const name = document.getElementById('fName').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const urgent = document.getElementById('fUrgent').checked;
+    if(!phone || phone.length < 10){ alert('Please enter a valid phone number.'); return; }
+    listings.unshift({crop, cropNe:crop, qty, price, marketPrice:Math.round(price*1.35), district, districtNe:districtsNe[district]||district, name, ward:'New listing', rating:'New', orders:0, verified:false, urgent, phone});
+    renderListings();
+    const toast = document.getElementById('formToast'); toast.classList.add('show');
+    this.reset(); setTimeout(() => toast.classList.remove('show'), 4000);
+  });
+
+
+  // Show the marketplace first, then smoothly request login/registration after 4 seconds.
+  const authOverlay = document.getElementById('authOverlay');
+  function showAuth(){ document.body.classList.add('auth-locked'); authOverlay.classList.add('show'); authOverlay.setAttribute('aria-hidden','false'); }
+  function hideAuth(){ authOverlay.classList.remove('show'); authOverlay.setAttribute('aria-hidden','true'); document.body.classList.remove('auth-locked'); }
+  setTimeout(showAuth, 4000);
+  function switchAuth(mode){
+    document.querySelectorAll('.auth-tab').forEach(b => b.classList.toggle('active', b.dataset.auth === mode));
+    document.getElementById('loginForm').classList.toggle('active', mode === 'login');
+    document.getElementById('registerForm').classList.toggle('active', mode === 'register');
+  }
+  document.querySelectorAll('.auth-tab').forEach(b => b.addEventListener('click', () => switchAuth(b.dataset.auth)));
+  document.querySelectorAll('[data-switch]').forEach(b => b.addEventListener('click', () => switchAuth(b.dataset.switch)));
+  // Demo account system: registration details are saved locally in this browser.
+  const authTitle = document.getElementById('authTitle');
+  const authStorageKey = 'taajaBazarAccount';
+  // Nepal mobile number format check. This validates the format, but true ownership
+  // verification requires sending an OTP from a backend/SMS provider.
+  function isValidNepalMobile(phone){ return /^9[678]\d{8}$/.test(phone); }
+  document.getElementById('registerForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const account = {
+      name: document.getElementById('registerName').value.trim(),
+      phone: document.getElementById('registerPhone').value.trim().replace(/\s+/g,''),
+      password: document.getElementById('registerPassword').value,
+       role: document.getElementById('registerRole').value
+    };
+    if(!account.name || !account.password){ return; }
+    if(!isValidNepalMobile(account.phone)){
+      authTitle.textContent = 'Please enter a valid 10-digit Nepal mobile number (starting with 96, 97, or 98).';
+      document.getElementById('registerPhone').focus(); return;
+    }
+    localStorage.setItem(authStorageKey, JSON.stringify(account));
+    document.getElementById('loginIdentity').value = account.phone;
+    document.getElementById('loginPassword').value = '';
+    switchAuth('login');
+    authTitle.textContent = 'Registration successful! Now log in using the same phone number and password.';
+    document.getElementById('loginPassword').focus();
+  });
+
+  function showWelcome(name, role){
+    const welcomeOverlay=document.getElementById('welcomeOverlay');
+    document.getElementById('welcomeMessage').textContent = name ? `Welcome, ${name}! ${role === 'farmer' ? 'Your farmer marketplace is ready.' : 'Find fresh produce directly from farmers.'}` : 'Your direct marketplace is ready.';
+    welcomeOverlay.classList.add('show'); welcomeOverlay.setAttribute('aria-hidden','false');
+    setTimeout(()=>{ welcomeOverlay.classList.remove('show'); welcomeOverlay.setAttribute('aria-hidden','true'); }, 2200);
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const saved = JSON.parse(localStorage.getItem(authStorageKey) || 'null');
+    const identity = document.getElementById('loginIdentity').value.trim().replace(/\s+/g,'');
+    const password = document.getElementById('loginPassword').value;
+    if(!saved){ authTitle.textContent = 'No registered account found. Please register first.'; switchAuth('register'); return; }
+    if(!isValidNepalMobile(identity)){
+      authTitle.textContent = 'Please enter a valid Nepal mobile number.'; return;
+    }
+    if(identity === saved.phone && password === saved.password){
+      hideAuth();
+      showWelcome(saved.name, saved.role);
+       document.getElementById('profileBtn').style.display='inline-flex';
+       document.getElementById('profileName').textContent=saved.name.split(' ')[0];
+       localStorage.setItem('taajaBazarLoggedIn','true');
+    } else {
+      authTitle.textContent = 'Incorrect registered phone number or password. Please try again.';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+    }
+  });
+
+  // Enable the site's own small hand cursor on desktop devices.
+  const customCursor = document.getElementById('customHandCursor');
+  if(window.matchMedia('(pointer:fine)').matches){
+    document.body.classList.add('custom-hand-cursor');
+    document.addEventListener('mousemove', e => { customCursor.style.left=e.clientX+'px'; customCursor.style.top=e.clientY+'px'; });
+    document.addEventListener('mousedown', () => customCursor.classList.add('clicking'));
+    document.addEventListener('mouseup', () => customCursor.classList.remove('clicking'));
+  }
+
+
+  renderChips();
+  renderListings();
+  renderSavedProducts();
+</script>
+</body>
+</html>
